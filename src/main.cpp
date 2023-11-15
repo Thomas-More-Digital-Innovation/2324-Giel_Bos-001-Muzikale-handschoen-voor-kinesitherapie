@@ -11,38 +11,54 @@
 #include <string>
 using namespace std;
 
-// - DEFINES - //
-// -- music notes -- //
-#define NOTE_C4 262
-#define NOTE_E4 330
-#define NOTE_G4 392
-#define NOTE_C5 523
-
-// -- pins for sensor modules -- //
-#define SCL_1 22 // pin for mpu6050 clock - I2C 1
-#define SDA_1 23 // pin for mpu6050 sda - I2C 1
-#define SCL_2 32 // pin for mpu6050 clock - I2C 2
-#define SDA_2 33 // pin for mpu6050 sda- I2C 2
-#define FSR 36   // pin for force sensor
-
-// -- pins for feedback modules -- //
-#define PIN_LED 15 // pin for neopixel ledring
-#define PIN_BUZ 12 // pin for buzzer module
-#define PIN_SND 27 // pin for sound module
-
-// -- other defines -- //
-Adafruit_NeoPixel ring = Adafruit_NeoPixel(12, PIN_LED, NEO_GRB + NEO_KHZ800); // define ledring
+// // -- other defines -- //
+//Adafruit_NeoPixel ring = Adafruit_NeoPixel(12, PIN_LED, NEO_GRB + NEO_KHZ800); // define ledring
 File myFile;                                                                   // define file for sd card
-std::vector<int> exercises;                                                    // vector for storing exercises
+std::vector<vector<String>> exercises;                                                    // vector for storing exercises
 
 Adafruit_MPU6050 mpu_hand;    // mpu hand
 Adafruit_MPU6050 mpu_thumb;   // mpu thumb
 Adafruit_MPU6050 mpu_fingers; // mpu fingers
 
-void setup(){
+std::vector<String> splitString(String input, char character){
+  std::vector<String> result;
+  int firstCharacter = 0;
+  int secondCharacter = 0;
 
+  while(firstCharacter != input.length()-1){
+    secondCharacter = input.indexOf(character, firstCharacter);
+    result.push_back(input.substring(firstCharacter, secondCharacter));
+    firstCharacter = secondCharacter;
+  }
+  return result;
+}
+
+void setup(){
+  Serial.begin(115200);  
+
+  Serial.print("Initializing SD card...");
+ 
+  if (!SD.begin(4)) {
+    Serial.println("initialization failed!");
+    while (1);
+  }
+  Serial.println("initialization done.");
+
+  myFile = SD.open("/oefeningen.txt");
+  if (myFile) {
+      while (myFile.available()) {
+        String input = "";
+        input = myFile.readStringUntil('\n'); 
+        input.trim();
+        exercises.push_back(splitString(input, ';'));
+      }
+  }
+
+  for(int i=0; i < exercises.size(); i++){
+    Serial.println(exercises[i][0]);
+  }
 }
 
 void loop(){
-  
+
 }
