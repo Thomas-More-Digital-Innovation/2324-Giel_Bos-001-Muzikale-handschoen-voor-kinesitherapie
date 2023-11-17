@@ -32,118 +32,10 @@ using namespace std;
 
 // -- other defines -- //
 Adafruit_NeoPixel ring = Adafruit_NeoPixel(12, PIN_LED, NEO_GRB + NEO_KHZ800); // define ledring
-File myFile;                                                                   // define file for sd card
-std::vector<int> exercises;                                                    // vector for storing exercises
 
 Adafruit_MPU6050 mpu_hand;    // mpu hand
 Adafruit_MPU6050 mpu_thumb;   // mpu thumb
 Adafruit_MPU6050 mpu_fingers; // mpu fingers
-
-// -- positions -- //
-// --- wrist positions --- //
-array<int, 3> hand_up{0, 0, -1}; // palm up
-array<int, 3> hand_l{0, 1, 0};   // palm left
-array<int, 3> hand_dn{0, 0, 1};  // palm down
-array<int, 3> hand_r{0, -1, 0};  // palm right
-array<int, 3> hand_fw{1, 0, 0};  // palm forward
-array<int, 3> hand_bw{-1, 0, 0}; // palm backward
-
-// --- thumb positions (always combined with hand_l) --- //
-array<int, 3> thumb_dn{0, 1, 0}; // thumb flat
-array<int, 3> thumb_up{1, 0, 0}; // thumb up
-
-// --- fingers positions (always combined with hand_up or hand_dn) --- //
-array<int, 3> fingers_flat_dn{0, 0, 1};  // fingers flat (hand_dn)
-array<int, 3> fingers_bend_dn{-1, 0, 0}; // fingers bent (hand_dn)
-
-array<int, 3> fingers_flat_up{0, 0, -1}; // fingers flat (hand_up)
-array<int, 3> fingers_bend_up{1, 0, 0};  // fingers bent (hand_up)
-
-// --- combined positions (always combined with hand_up or hand_dn) --- //
-array<int, 3> thumb_fist_dn{0, -1, 0};   // fingers fist (hand_dn)
-array<int, 3> fingers_fist_dn{-1, 0, 0}; // fingers fist (hand_dn)
-
-array<int, 3> thumb_fist_up{0, 1, 0};   // fingers fist (hand_up)
-array<int, 3> fingers_fist_up{1, 0, 0}; // fingers fist (hand_up)
-
-// --- free position (used when position isn't relevant) --- //
-array<int, 3> free_pos{0, 0, 0}; // free position
-
-// -- exercises -- //
-// --- single positions --- //
-array<array<int, 3>, 3> ex1 = {hand_up, free_pos, free_pos}; // exercise 1
-array<array<int, 3>, 3> ex2 = {hand_l, free_pos, free_pos};  // exercise 2
-array<array<int, 3>, 3> ex3 = {hand_dn, free_pos, free_pos}; // exercise 3
-array<array<int, 3>, 3> ex4 = {hand_r, free_pos, free_pos};  // exercise 4
-array<array<int, 3>, 3> ex5 = {hand_fw, free_pos, free_pos}; // exercise 5
-array<array<int, 3>, 3> ex6 = {hand_bw, free_pos, free_pos}; // exercise 6
-
-// --- double positions --- //
-array<array<int, 3>, 3> ex7{hand_l, thumb_dn, free_pos}; // exercise 7
-array<array<int, 3>, 3> ex8{hand_l, thumb_up, free_pos}; // exercise 8
-
-array<array<int, 3>, 3> ex9{hand_dn, free_pos, fingers_flat_dn};  // exercise 9
-array<array<int, 3>, 3> ex10{hand_dn, free_pos, fingers_bend_dn}; // exercise 10
-
-array<array<int, 3>, 3> ex11{hand_up, free_pos, fingers_flat_up}; // exercise 11
-array<array<int, 3>, 3> ex12{hand_up, free_pos, fingers_bend_up}; // exercise 12
-
-// --- triple positions --- //
-array<array<int, 3>, 3> ex13{hand_dn, thumb_fist_dn, fingers_fist_dn}; // exercise 13
-array<array<int, 3>, 3> ex14{hand_up, thumb_fist_up, fingers_fist_up}; // exercise 14
-
-// switch function used for linking input numbers to exercises
-array<array<int, 3>, 3> selectex(int ex_nr)
-{
-  switch (ex_nr)
-  {
-  case 1:
-    return ex1;
-    break;
-  case 2:
-    return ex2;
-    break;
-  case 3:
-    return ex3;
-    break;
-  case 4:
-    return ex4;
-    break;
-  case 5:
-    return ex5;
-    break;
-  case 6:
-    return ex6;
-    break;
-  case 7:
-    return ex7;
-    break;
-  case 8:
-    return ex8;
-    break;
-  case 9:
-    return ex9;
-    break;
-  case 10:
-    return ex10;
-    break;
-  case 11:
-    return ex11;
-    break;
-  case 12:
-    return ex12;
-    break;
-  case 13:
-    return ex13;
-    break;
-  case 14:
-    return ex14;
-    break;
-  default:
-    return ex1;
-    break;
-  }
-}
 
 // converts sensor readings to 1, -1 or 0
 int conv(int input)
@@ -631,26 +523,6 @@ void setup()
     while (1);
   }
   Serial.println("initialization done.");
-
-  myFile = SD.open("/oefeningen.txt");
-  if (myFile) {
-    Serial.println("/oefeningen.txt");
-    // read from the file until there's nothing else in it:
-    while (myFile.available()) {
-      String input = "";
-      //read every line of the file and save it in a temporary variable of type String
-      input = myFile.readStringUntil('\n'); 
-      input.trim(); // Removes '\n' character
-      if(isNumber(input) == true){    //checks if the line of the file is a number
-        exercises.push_back(input.toInt());   // if it is a number it will write it to excersises with a type int
-      }
-    }
-    // close the file:
-    myFile.close();
-  } else {
-    // if the file didn't open, print an error:
-    Serial.println("error opening test.txt");
-  }
 
 
   sdsucces();
