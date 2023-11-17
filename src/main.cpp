@@ -3,10 +3,6 @@
 #include <Adafruit_NeoPixel.h>       // neopixel library for ledring
 #include <SD.h>                      // sd card library
 #include <SPI.h>                     // spi library for sd card
-#include <Adafruit_MPU6050.h>        // mpu6050 library
-#include <Adafruit_Sensor.h>         // sensor library for mpu6050
-#include <Wire.h>                    // wire library for mpu6050
-#include <Adafruit_BusIO_Register.h> // busio library for mpu6050
 #include <vector>                    // library for dynamic array (vector)
 using namespace std;
 
