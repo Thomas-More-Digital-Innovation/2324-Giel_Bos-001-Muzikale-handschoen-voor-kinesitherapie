@@ -23,10 +23,11 @@ fileToVector fileToVectorFunctions;
 #define SCL_2 32 // pin for mpu6050 clock - I2C 2
 #define SDA_2 33 // pin for mpu6050 sda- I2C 2
 
+#define FSR 36   // pin for force sensor
+
 gyro hand;
 gyro thumb;
 gyro fingers;
-
 
 void setup() {
   Serial.begin(115200);      // open serial monitor
@@ -36,9 +37,7 @@ void setup() {
   Wire.begin(SDA_1, SCL_1);  // I2C bus 1
   Wire1.begin(SDA_2, SCL_2); // I2C bus 2
 
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+  while (!Serial);
  
   Serial.print("Initializing SD card...");
  
@@ -47,7 +46,6 @@ void setup() {
     while (1);
   }
   Serial.println("initialization done.");
-
 
   oefeningenFile = SD.open("/oefeningen.txt");
   oefeningenArray = fileToVectorFunctions.toStringVector(oefeningenFile);
@@ -67,6 +65,7 @@ void loop(){
   std::vector<std::array<int, 3>> oefeningen;
   int oefeningenreek = Serial.parseInt();
   for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
+
     int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
 
     bool oefeningKlaar = false;
@@ -99,7 +98,12 @@ void loop(){
       }
     }
     else{
-      //push sensor test
+      while (oefeningKlaar == false){
+        uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
+        if (fsrReading > 2500){
+          oefeningKlaar == true;
+        }
+      }
     }
   }
 }
