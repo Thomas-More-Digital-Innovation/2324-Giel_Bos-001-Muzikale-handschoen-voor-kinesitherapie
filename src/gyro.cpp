@@ -5,26 +5,33 @@
 #include <Adafruit_BusIO_Register.h> // busio library for mpu6050
 #include <gyro.h>
 
-gyro::gyro(Adafruit_MPU6050 sensor){
-    _sensor = sensor;
+void gyro::gyroSetup(int hex,TwoWire &wire){
+    _sensor.begin(hex, &wire);
+
+    _sensor.setAccelerometerRange(MPU6050_RANGE_8_G);
+
+    _sensor.setFilterBandwidth(MPU6050_BAND_5_HZ);
 }
 
-void gyro::gyroSetup(TwoWire &wire){
-    if(!_sensor.begin(0x69, &wire)){}
+std::array<int, 3> gyro::gyroData(){
+  std::array<int, 3> result;
+  sensors_event_t a, g, t;
+  _sensor.getEvent(&a, &g, &t);
+
+  result[0] = conv((int)a.acceleration.x);
+  result[1] = conv((int)a.acceleration.y);;
+  result[2] = conv((int)a.acceleration.z);;
+  return result;
 }
 
-int conv(int input)
-{
-  if (input < -7)
-  {
+int gyro::conv(int input){
+  if (input < -7){
     return -1;
   }
-  else if (input > 7)
-  {
+  else if (input > 7){
     return 1;
   }
-  else
-  {
+  else{
     return 0;
   }
 }

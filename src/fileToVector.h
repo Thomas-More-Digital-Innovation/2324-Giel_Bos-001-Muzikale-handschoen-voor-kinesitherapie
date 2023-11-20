@@ -7,10 +7,9 @@
 
 class fileToVector{
     public:
-        fileToVector();
         std::vector<String> toStringVector(File file);
         std::vector<String> splitString(String input, char character);
-        std::vector<std::vector<int>> toIntVector(String input);
+        std::vector<std::array<int, 3>> toIntVector(String input);
 };
 
 #endif

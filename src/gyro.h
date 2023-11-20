@@ -8,8 +8,8 @@
 
 class gyro{
     public:
-        gyro(Adafruit_MPU6050 sensor);
-        void gyroSetup(TwoWire &wire);
+        void gyroSetup(int hex, TwoWire &wire);
+        std::array<int, 3> gyroData();
         int conv(int input);
     private:
         Adafruit_MPU6050 _sensor;
