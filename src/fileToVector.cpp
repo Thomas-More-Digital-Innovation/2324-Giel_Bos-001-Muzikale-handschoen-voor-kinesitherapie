@@ -3,7 +3,7 @@
 #include <vector>
 #include <fileToVector.h>
 
-std::vector<String> fileToVector::toStringVector(File file){
+std::vector<String> toStringVector(File file){
     std::vector<String> result;
     if(file){
         while(file){
@@ -16,7 +16,7 @@ std::vector<String> fileToVector::toStringVector(File file){
     return result;
 }
 
-std::vector<String> fileToVector::splitString(String input, char character){
+std::vector<String> splitString(String input, char character){
   std::vector<String> result;
   int firstCharacter = -1;
 
@@ -34,7 +34,7 @@ std::vector<String> fileToVector::splitString(String input, char character){
   return result;
 }
 
- std::vector<std::array<int, 3>> fileToVector::toIntVector(String input){
+ std::vector<std::array<int, 3>> toIntVector(String input){
     std::vector<std::array<int, 3>> result;
 
     std::vector<String> stringVector = splitString(input, ';'); //{"0,0,0", "0,0,0", "0,0,0"}

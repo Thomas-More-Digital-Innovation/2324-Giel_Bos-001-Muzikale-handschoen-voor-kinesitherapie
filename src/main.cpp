@@ -16,8 +16,6 @@ std::vector<String> reeksenArray;
 File oefeningenFile;                         // define file for sd card
 std::vector<String> oefeningenArray;
 
-fileToVector fileToVectorFunctions;
-
 #define SCL_1 22 // pin for mpu6050 clock - I2C 1
 #define SDA_1 23 // pin for mpu6050 sda - I2C 1
 #define SCL_2 32 // pin for mpu6050 clock - I2C 2
@@ -48,10 +46,10 @@ void setup() {
   Serial.println("initialization done.");
 
   oefeningenFile = SD.open("/oefeningen.txt");
-  oefeningenArray = fileToVectorFunctions.toStringVector(oefeningenFile);
+  oefeningenArray = toStringVector(oefeningenFile);
 
   reeksenFile = SD.open("/reeksen.txt");
-  reeksenArray = fileToVectorFunctions.toStringVector(reeksenFile);
+  reeksenArray = toStringVector(reeksenFile);
 
   hand.gyroSetup(0x69, Wire);
   thumb.gyroSetup(0x68, Wire);
@@ -71,7 +69,7 @@ void loop(){
     bool oefeningKlaar = false;
 
     if(oefeningenArray[oefening] != "p"){
-      oefeningen = fileToVectorFunctions.toIntVector(oefeningenArray[oefening]);
+      oefeningen = toIntVector(oefeningenArray[oefening]);
 
       while (oefeningKlaar == false){
         std::array<int, 3> coHand = hand.gyroData();
