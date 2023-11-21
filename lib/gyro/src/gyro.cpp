@@ -5,7 +5,20 @@
 #include <Adafruit_BusIO_Register.h> // busio library for mpu6050
 #include <gyro.h>
 
+gyro::gyro(Adafruit_MPU6050 sensor){
+  _sensor = sensor;
+}
+
 void gyro::gyroSetup(int hex,TwoWire &wire){
+
+  if (!_sensor.begin(hex, &wire))
+  {
+    Serial.println("Failed to find gyro");
+    while (1)
+    {
+      delay(1000);
+    }
+  }
     _sensor.begin(hex, &wire);
 
     _sensor.setAccelerometerRange(MPU6050_RANGE_8_G);

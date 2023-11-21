@@ -1,19 +1,24 @@
 #include <Arduino.h>
-#include <SD.h>
 #include <vector>
 #include <fileToVector.h>
+#include <SD.h>                      // sd card library
+#include <SPI.h>                     // spi library for sd card
 
 std::vector<String> toStringVector(File file){
-    std::vector<String> result;
-    if(file){
-        while(file){
-            String input = "";
-            input = file.readStringUntil('\n'); 
-            input.trim();
-            result.push_back(input);
-        }
+  std::vector<String> result;
+  if(file){
+    while(file.available()){
+      String input = "";
+      input = file.readStringUntil('\n'); 
+      input.trim();
+      result.push_back(input);
     }
-    return result;
+    file.close();
+  }
+  else{
+    Serial.println("file failed");
+  }
+  return result;
 }
 
 std::vector<String> splitString(String input, char character){

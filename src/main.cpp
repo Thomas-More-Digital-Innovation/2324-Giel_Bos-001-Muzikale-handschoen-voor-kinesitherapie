@@ -1,12 +1,18 @@
 // - INCLUDES - //
 #include <Arduino.h>                 // arduino core
-#include <Adafruit_NeoPixel.h>       // neopixel library for ledring
 
 #include <SD.h>                      // sd card library
 #include <SPI.h>                     // spi library for sd card
-#include <fileToVector.h>
+#include <fileToVector.h> 
 
+#include <Adafruit_MPU6050.h>        // mpu6050 library
+#include <Adafruit_Sensor.h>         // sensor library for mpu6050
+#include <Wire.h>                    // wire library for mpu6050
+#include <Adafruit_BusIO_Register.h> // busio library for mpu6050
 #include <gyro.h>
+
+#include <Adafruit_NeoPixel.h>       // neopixel library for ledring
+#include <ledring.h>
 
 #include <vector>                    // library for dynamic array (vector)
 using namespace std;
@@ -23,9 +29,21 @@ std::vector<String> oefeningenArray;
 
 #define FSR 36   // pin for force sensor
 
-gyro hand;
-gyro thumb;
-gyro fingers;
+#define PIN_LED 15 // pin for neopixel ledring
+
+Adafruit_MPU6050 mpu_hand;    // mpu hand
+Adafruit_MPU6050 mpu_thumb;   // mpu thumb
+Adafruit_MPU6050 mpu_fingers; // mpu fingers
+
+gyro hand(mpu_hand);
+gyro thumb(mpu_thumb);
+gyro fingers(mpu_fingers);
+
+Adafruit_NeoPixel ledring1 = Adafruit_NeoPixel(12, PIN_LED, NEO_GRB + NEO_KHZ800);
+
+ledring ring(ledring1);
+
+std::array<std::array<uint32_t, 3>,12> smiley;
 
 void setup() {
   Serial.begin(115200);      // open serial monitor
@@ -34,6 +52,19 @@ void setup() {
   digitalWrite(14, HIGH);    // pin 14 output high (used for changing I2C address gyro hand)
   Wire.begin(SDA_1, SCL_1);  // I2C bus 1
   Wire1.begin(SDA_2, SCL_2); // I2C bus 2
+
+  for(int i; i < smiley.size(); i++){
+    if((i != 5) && (i != 7) && (i != 9)){
+      smiley[i][0] = 5;
+      smiley[i][1] = 213;
+      smiley[i][2] = 250;
+    }
+    else{
+      smiley[i][0] = 0;
+      smiley[i][1] = 0;
+      smiley[i][2] = 0;
+    }
+  }
 
   while (!Serial);
  
@@ -52,8 +83,14 @@ void setup() {
   reeksenArray = toStringVector(reeksenFile);
 
   hand.gyroSetup(0x69, Wire);
+  Serial.println("hand done");
   thumb.gyroSetup(0x68, Wire);
+  Serial.println("thumb done");
   fingers.gyroSetup(0x68, Wire1);
+  Serial.println("fingers done");
+
+  //ring.showFigure(smiley, 50);
+  delay(1000);
 }
 
 void loop(){

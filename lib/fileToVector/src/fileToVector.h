@@ -2,8 +2,9 @@
 #define fileToVector_h
 
 #include <Arduino.h>
-#include <SD.h>
 #include <vector>
+#include <SD.h>                      // sd card library
+#include <SPI.h>                     // spi library for sd card
 
 std::vector<String> toStringVector(File file);
 std::vector<String> splitString(String input, char character);
