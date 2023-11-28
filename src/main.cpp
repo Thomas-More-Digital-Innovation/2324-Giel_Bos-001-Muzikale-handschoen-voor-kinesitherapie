@@ -12,7 +12,6 @@
 #include <gyro.h>
 
 #include <Adafruit_NeoPixel.h>       // neopixel library for ledring
-#include <ledring.h>
 
 #include <vector>                    // library for dynamic array (vector)
 using namespace std;
@@ -31,6 +30,13 @@ std::vector<String> oefeningenArray;
 
 #define PIN_LED 15 // pin for neopixel ledring
 
+#define PIN_SND 27 // pin for sound module
+
+#define NOTE_C4 262
+#define NOTE_E4 330
+#define NOTE_G4 392
+#define NOTE_C5 523
+
 Adafruit_MPU6050 mpu_hand;    // mpu hand
 Adafruit_MPU6050 mpu_thumb;   // mpu thumb
 Adafruit_MPU6050 mpu_fingers; // mpu fingers
@@ -39,11 +45,33 @@ gyro hand(mpu_hand);
 gyro thumb(mpu_thumb);
 gyro fingers(mpu_fingers);
 
-Adafruit_NeoPixel ledring1 = Adafruit_NeoPixel(12, PIN_LED, NEO_GRB + NEO_KHZ800);
-
-ledring ring(ledring1);
+Adafruit_NeoPixel ledring = Adafruit_NeoPixel(12, PIN_LED,  NEO_GRB + NEO_KHZ800);
 
 std::array<std::array<uint32_t, 3>,12> smiley;
+
+void off(){
+  ledring.show();
+  delay(1000);
+  for(int i = 0; i<12; i++){
+    ledring.setPixelColor(i, 0,0,0);
+  }
+  ledring.show();
+}
+
+void showFigure(std::array<std::array<uint32_t, 3>,12> figure, int brightness){
+    ledring.setBrightness(brightness);
+    for(int i = 0; i < figure.size(); i++){
+        if (i >= 0 && i < 12) {
+            ledring.setPixelColor(i,figure[i][0],figure[i][1],figure[i][2]);
+        }
+    }
+    ledring.show();
+}
+
+void playsound(int note, int duration){
+  pinMode(PIN_SND, OUTPUT); // sound pin is output
+  tone(PIN_SND, note, duration);
+}
 
 void setup() {
   Serial.begin(115200);      // open serial monitor
@@ -52,6 +80,8 @@ void setup() {
   digitalWrite(14, HIGH);    // pin 14 output high (used for changing I2C address gyro hand)
   Wire.begin(SDA_1, SCL_1);  // I2C bus 1
   Wire1.begin(SDA_2, SCL_2); // I2C bus 2
+
+  pinMode(PIN_SND, OUTPUT);
 
   for(int i; i < smiley.size(); i++){
     if((i != 5) && (i != 7) && (i != 9)){
@@ -83,14 +113,16 @@ void setup() {
   reeksenArray = toStringVector(reeksenFile);
 
   hand.gyroSetup(0x69, Wire);
-  Serial.println("hand done");
   thumb.gyroSetup(0x68, Wire);
-  Serial.println("thumb done");
   fingers.gyroSetup(0x68, Wire1);
-  Serial.println("fingers done");
 
-  //ring.showFigure(smiley, 50);
+  showFigure(smiley, 50);
+  playsound(NOTE_C4, 250);
+  playsound(NOTE_E4, 250);
+  playsound(NOTE_G4, 250);
+  playsound(NOTE_C5, 250);
   delay(1000);
+  off();
 }
 
 void loop(){
@@ -100,11 +132,9 @@ void loop(){
   std::vector<std::array<int, 3>> oefeningen;
   int oefeningenreek = Serial.parseInt();
   for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
-
     int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
-
     bool oefeningKlaar = false;
-
+    Serial.println(oefeningenArray[oefening]);
     if(oefeningenArray[oefening] != "p"){
       oefeningen = toIntVector(oefeningenArray[oefening]);
 
@@ -126,7 +156,7 @@ void loop(){
         for(int i = 0; i < oefeningen.size(); i++){
           if(boolArray[i] == true){
             if(oefeningen[i] == co2D[i]){
-              oefeningKlaar == true;
+              oefeningKlaar = true;
             }
           }
         }
@@ -136,9 +166,17 @@ void loop(){
       while (oefeningKlaar == false){
         uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
         if (fsrReading > 2500){
-          oefeningKlaar == true;
+          oefeningKlaar = true;
         }
       }
     }
+  showFigure(smiley, 50);
+  playsound(NOTE_C4, 250);
+  playsound(NOTE_E4, 250);
+  playsound(NOTE_G4, 250);
+  playsound(NOTE_C5, 250);
+  off();
+    Serial.println("oefening klaar");
   }
+  Serial.println("oefeningenreeks klaar");
 }
