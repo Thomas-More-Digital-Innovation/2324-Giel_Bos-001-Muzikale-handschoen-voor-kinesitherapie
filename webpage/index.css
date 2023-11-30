@@ -1,0 +1,27 @@
+.exSQ{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.exSQ a i{
+    font-size: 100px;
+    color: #000;
+    margin-right: 25px;
+}
+
+.exSQ div{
+    width: 75%;
+    height: 250px;
+    border: 2px solid #000;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.exSQ div img{
+    height: 90%;
+    margin: 10px;
+}
