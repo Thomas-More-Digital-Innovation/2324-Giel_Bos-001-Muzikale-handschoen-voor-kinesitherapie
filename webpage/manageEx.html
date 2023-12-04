@@ -23,8 +23,55 @@
             <a href="manageExSQ.html"><span>Oefeningenreeks beheren</span></a>
         </div>
     </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>Oefening toevoegen</span>
+        
+    </div>
+
     <div id="ex">
-    </div>  
+    </div>
+
+    <div id="popup" style="display: none;">
+        <form action="">
+            <label for="handPos">Hand positie</label>
+            <input type="radio" name="typeEX" id="handPos">
+
+            <label for="handpalm">Handpalm</label>
+            <select name="handpalm" id="handpalm">
+                <option value="up">Boven</option>
+                <option value="left">Links</option>
+                <option value="down">Onder</option>
+                <option value="right">Rechts</option>
+                <option value="front">Vooruit</option>
+                <option value="back">Achteruit</option>
+                <option value="free">Vrije positie</option>
+            </select>
+
+            <label for="fingers">Vingers</label>
+            <select name="fingers" id="fingers">
+                <option value="folded">Geplooid</option>
+                <option value="stretched">Gestrekt</option>
+                <option value="free">Vrije positie</option>
+            </select>
+
+            <label for="thumb">Duim</label>
+            <select name="thumb" id="thumb">
+                <option value="toHand">Tegen de hand</option>
+                <option value="toPalm">Tegen de handpalm</option>
+                <option value="stretched">Gestrekt</option>
+                <option value="free">Vrije positie</option>
+            </select>
+
+            <label for="press">Druk proef</label>
+            <input type="radio" name="typeEX" id="press">
+
+            <input type="submit" value="Bevestigen">
+            <div onclick="hidePopUp()">
+                <span>annuleren</span>
+            </div>
+        </form>
+    </div>
 
     <script>
         function displayImages() {
@@ -34,7 +81,7 @@
             for(var i = 0; i < 7; i++){
                 const div = document.createElement('div');
                 const img = document.createElement('img');
-
+                const div2 = document.createElement('div');
                 const pen = document.createElement('span');
                 pen.innerHTML = '<i class="fa-solid fa-pen"></i>';
                 const trash = document.createElement('span');
@@ -42,12 +89,23 @@
                 img.src = filePath + 'ex' + String(i) + '.jpg';
                 img.alt = String(i);
                 div.appendChild(img);
-                div.appendChild(pen);
-                div.appendChild(trash);
+                div2.appendChild(pen);
+                div2.appendChild(trash);
+                div.appendChild(div2)
                 container.appendChild(div);
             }
         }
         window.onload = displayImages;
+
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "inline-block";
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "none";
+        }
+    
     </script>
 </body>
 </html>
