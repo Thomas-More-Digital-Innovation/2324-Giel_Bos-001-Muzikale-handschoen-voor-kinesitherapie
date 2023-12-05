@@ -1,5 +1,7 @@
 #ex{
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 #ex div img{
@@ -44,4 +46,51 @@
     width: 34%;
     height: 400px;
     background-color: lightgray;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#popup form{
+    background-color: transparent;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#popup form *{
+    margin: 5px;
+    font-size: 15px;
+}
+.next{
+    display: flex;
+    justify-content: space-between;
+}
+
+.next *{
+    border-radius: 20px;
+    padding: 10px;
+    border: none;
+}
+.next div{
+    background-color: red;
+
+}
+.next input{
+    background-color: green;
+}
+
+@media (max-width: 600px){
+    #popup{
+        position: absolute;
+        top: 150px;
+        left: 5%;
+        width: 90%;
+    }
+    #addEX{
+        width: 90%;
+    }
 }

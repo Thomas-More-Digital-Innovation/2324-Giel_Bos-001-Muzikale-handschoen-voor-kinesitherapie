@@ -34,8 +34,12 @@
 
     <div id="popup" style="display: none;">
         <form action="">
-            <label for="handPos">Hand positie</label>
-            <input type="radio" name="typeEX" id="handPos">
+
+            <div>
+                <label for="handPos">Hand positie</label>
+                <input type="radio" name="typeEX" id="handPos"  checked>        
+            </div>
+
 
             <label for="handpalm">Handpalm</label>
             <select name="handpalm" id="handpalm">
@@ -63,13 +67,22 @@
                 <option value="free">Vrije positie</option>
             </select>
 
-            <label for="press">Druk proef</label>
-            <input type="radio" name="typeEX" id="press">
-
-            <input type="submit" value="Bevestigen">
-            <div onclick="hidePopUp()">
-                <span>annuleren</span>
+            <div>
+                <label for="press">Druk proef</label>
+                <input type="radio" name="typeEX" id="press">
             </div>
+
+            <label for="file">Upload foto</label>
+            <input type="file" name="foto" id="foto">
+
+            <div class="next">
+                <input type="submit" value="Bevestigen">
+                <div onclick="hidePopUp()">
+                    Annuleren
+                </div>
+            </div>
+
+
         </form>
     </div>
 

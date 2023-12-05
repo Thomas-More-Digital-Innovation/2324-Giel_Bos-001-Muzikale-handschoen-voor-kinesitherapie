@@ -3,25 +3,29 @@
     justify-content: center;
     align-items: center;
     margin-top: 25px;
+    margin-right: 5px;
 }
 
 .exSQ a i{
     font-size: 100px;
     color: #000;
-    margin-right: 25px;
+    margin-right: 20px;
+    margin-left: 5px;
 }
 
 .exSQ div{
     width: 75%;
-    height: 250px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border: 2px solid #000;
     border-radius: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .exSQ div img{
-    height: 90%;
+    height: 200px;
     margin: 10px;
 }
