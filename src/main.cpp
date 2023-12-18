@@ -119,19 +119,6 @@ void setup() {
   reeksenFile = SD.open("/reeksen.txt");
   reeksenArray = toStringVector(reeksenFile);
 
-  File wifi = SD.open("/wifi.txt");
-  if(wifi){
-    int count = 0;
-    while (wifi){
-      string input = "";
-      input = wifi.readStringUntil('\n');
-      input.trim();
-      wifiCred[count] = input;
-      count += 1;
-    }
-    
-  }
-
   hand.gyroSetup(0x69, Wire);
   thumb.gyroSetup(0x68, Wire);
   fingers.gyroSetup(0x68, Wire1);

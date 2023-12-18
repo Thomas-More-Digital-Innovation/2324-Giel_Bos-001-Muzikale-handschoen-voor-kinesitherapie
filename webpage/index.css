@@ -6,7 +6,7 @@
     margin-right: 5px;
 }
 
-.exSQ a i{
+.exSQ div a i{
     font-size: 100px;
     color: #000;
     margin-right: 20px;
@@ -17,15 +17,17 @@
     width: 75%;
     padding-top: 10px;
     padding-bottom: 10px;
-    border: 2px solid #000;
     border-radius: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.exSQ div div{
+    border: 2px solid #000;
     flex-wrap: wrap;
 }
 
-.exSQ div img{
+.exSQ div div img{
     height: 200px;
     margin: 10px;
 }
