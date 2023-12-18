@@ -14,6 +14,9 @@
 #include <Adafruit_NeoPixel.h>       // neopixel library for ledring
 
 #include <vector>                    // library for dynamic array (vector)
+
+#include "ESPAsyncWebServer.h"
+#include <WiFi.h>
 using namespace std;
 
 File reeksenFile;
@@ -44,6 +47,10 @@ Adafruit_MPU6050 mpu_fingers; // mpu fingers
 gyro hand(mpu_hand);
 gyro thumb(mpu_thumb);
 gyro fingers(mpu_fingers);
+
+std::array<string,2> wifiCred;
+
+AsyncWebServer server(80);
 
 Adafruit_NeoPixel ledring = Adafruit_NeoPixel(12, PIN_LED,  NEO_GRB + NEO_KHZ800);
 

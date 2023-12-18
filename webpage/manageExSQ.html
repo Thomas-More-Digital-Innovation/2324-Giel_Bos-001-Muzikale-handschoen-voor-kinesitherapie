@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningenreeks beheren</title>
+    <link rel="stylesheet" href="basicStyling.css">
+    <link rel="stylesheet" href="manageExSQ.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a href="index.html" class="active"><span>Oefeningen</span></a>
+            <a href="manageRWLED.html"><span>Beloningen</span></a>
+        </div>
+        <div>
+            <a href="index.html"><span>Oefeningenreeks starten</span></a>
+            <a href="manageEx.html"><span>Oefeningen beheren</span></a>
+            <a href="manageExSQ.html" class="active"><span>Oefeningenreeks beheren</span></a>
+        </div>
+    </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>Oefeningenreeks toevoegen</span>
+    </div>
+
+    <div class="exSQ">
+        <div>
+            <div class="images">
+                <img src="images/ex0.jpg" alt="ex0">
+                <img src="images/ex1.jpg" alt="ex1">
+                <img src="images/ex2.jpg" alt="ex2">
+                <img src="images/ex3.jpg" alt="ex3">
+            </div>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup" style="display: none;">
+        <div class="customform">
+            <div id="exlist">
+
+            </div>
+            <div id="newSQ">
+
+            </div>
+
+            <div class="next">
+                <div id="approve" onclick="hidePopUp()">
+                    Bevestigen
+                </div>
+                <div id="cancel" onclick="hidePopUp()">
+                    Annuleren
+                </div>  
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "inline-block";
+
+            const filePath = 'images/';
+            const container = document.getElementById('exlist');
+
+            for(var i = 0; i < 7; i++){
+                const img = document.createElement('img');
+                img.src = filePath + 'ex' + String(i) + '.jpg';
+                img.alt = String(i);
+                img.onclick = function(){
+                    appendImage(img);
+                };
+                container.appendChild(img);
+            }
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            const newSQ = document.getElementById("newSQ");
+            const exlist = document.getElementById('exlist');
+            exlist.innerHTML = "";
+            newSQ.innerHTML = "";
+            div.style.display = "none";
+        }
+        function appendImage(clickedImage){
+            const container = document.getElementById('newSQ');
+            const img = document.createElement('img');
+            img.src = clickedImage.src;
+            img.alt = clickedImage.alt;
+            container.appendChild(img);
+        }
+    </script>
+</body>
+</html>

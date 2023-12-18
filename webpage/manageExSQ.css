@@ -1,0 +1,146 @@
+#addEX{
+    background-color: lightgray;
+    font-size: 25px;
+    width: 33%;
+    min-height: 50px;
+    border-radius: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+#addEX span{
+    text-align: center;
+}
+#addEX:hover,
+#addEX:focus{
+    background-color: gray;
+}
+.exSQ{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    margin-right: 5px;
+}
+
+.exSQ > div{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 75%;
+    display: flex;
+    justify-content: center;
+}
+.exSQ > div > .images{
+    border: 2px solid #000;
+    width: 90%;
+    border-radius: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.exSQ > div > .images > img{
+    height: 200px;
+    margin: 10px;
+}
+
+.exSQ > div > .icons{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.exSQ > div > .icons > i{
+    margin: 5px;
+    font-size: 50px;
+}
+
+#popup{
+    position: absolute;
+    top: 150px;
+    left: 16%;
+    width: 70%;
+    min-height: 500px;
+    background-color: lightgray;
+    border-radius: 30px;
+}
+
+#popup .customform{
+    background-color: transparent;
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#popup .customform *{
+    margin: 5px;
+    font-size: 15px;
+}
+
+.next{
+    display: flex;
+    justify-content: space-between;
+    width: 40%;
+}
+
+.next *{
+    border-radius: 20px;
+    padding: 10px;
+    border: none;
+}
+#cancel{
+    background-color: red;
+
+}
+#approve{
+    background-color: green;
+}
+#newSQ{
+    border: 2px solid #000;
+    width: 90%;
+    min-height: 220px;
+    border-radius: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#exlist,
+#newSQ{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#exlist img{
+    height: 200px;
+}
+#newSQ img{
+    height: 200px;
+}
+
+@media (max-width: 900px){
+    #addEX{
+        width: 60%;
+    }
+}
+
+@media (max-width: 600px){
+    #popup{
+        position: absolute;
+        top: 150px;
+        left: 5%;
+        width: 90%;
+    }
+    #addEX{
+        width: 90%;
+    }
+}
