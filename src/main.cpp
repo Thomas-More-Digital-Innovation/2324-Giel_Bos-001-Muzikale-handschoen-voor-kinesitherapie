@@ -3,7 +3,9 @@
 
 #include <SD.h>                      // sd card library
 #include <SPI.h>                     // spi library for sd card
-#include <fileToVector.h> 
+#include <fileToVector.h>
+#include <stdio.h>
+#include <stdlib.h> 
 
 #include <Adafruit_MPU6050.h>        // mpu6050 library
 #include <Adafruit_Sensor.h>         // sensor library for mpu6050
@@ -15,8 +17,18 @@
 
 #include <vector>                    // library for dynamic array (vector)
 
-#include "ESPAsyncWebServer.h"
 #include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include "FS.h"
+
+#include <sqlite3.h>
+#include <ArduinoJson.h>
+
+const char* ssid = "iPhone van Matt";
+const char* password = "helloThisIsAPassword";
+
+AsyncWebServer server(80);
 using namespace std;
 
 File reeksenFile;
@@ -50,11 +62,12 @@ gyro fingers(mpu_fingers);
 
 std::array<string,2> wifiCred;
 
-AsyncWebServer server(80);
-
 Adafruit_NeoPixel ledring = Adafruit_NeoPixel(12, PIN_LED,  NEO_GRB + NEO_KHZ800);
 
 std::array<std::array<uint32_t, 3>,12> smiley;
+
+sqlite3 *db1;
+
 
 void off(){
   ledring.show();
@@ -78,6 +91,62 @@ void showFigure(std::array<std::array<uint32_t, 3>,12> figure, int brightness){
 void playsound(int note, int duration){
   pinMode(PIN_SND, OUTPUT); // sound pin is output
   tone(PIN_SND, note, duration);
+}
+
+String getMime(String filename){
+  if (filename.endsWith(".html")) {
+    return "text/html";
+  } else if (filename.endsWith(".css")) {
+    return "text/css";
+  } else if (filename.endsWith(".js")) {
+    return "application/javascript";
+  } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+    return "image/jpeg";
+  } else if (filename.endsWith(".png")) {
+    return "image/png";
+  } else if (filename.endsWith(".gif")) {
+    return "image/gif";
+  } else {
+    return "application/octet-stream";
+  }
+}
+
+const char* data = "Callback function called";
+static int callback(void *data, int argc, char **argv, char **azColName){
+   int i;
+   Serial.printf("%s: ", (const char*)data);
+   for (i = 0; i<argc; i++){
+       Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   Serial.printf("\n");
+   return 0;
+}
+
+char *zErrMsg = 0;
+int db_exec(sqlite3 *db, const char *sql) {
+   Serial.println(sql);
+   long start = micros();
+   int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+   if (rc != SQLITE_OK) {
+       Serial.printf("SQL error: %s\n", zErrMsg);
+       sqlite3_free(zErrMsg);
+   } else {
+       Serial.printf("Operation done successfully\n");
+   }
+   Serial.print(F("Time taken:"));
+   Serial.println(micros()-start);
+   return rc;
+}
+
+int openDb(const char *filename, sqlite3 **db) {
+   int rc = sqlite3_open(filename, db);
+   if (rc) {
+       Serial.printf("Can't open database: %s\n", sqlite3_errmsg(*db));
+       return rc;
+   } else {
+       Serial.printf("Opened database successfully\n");
+   }
+   return rc;
 }
 
 void setup() {
@@ -112,6 +181,7 @@ void setup() {
     while (1);
   }
   Serial.println("initialization done.");
+  SPI.begin();
 
   oefeningenFile = SD.open("/oefeningen.txt");
   oefeningenArray = toStringVector(oefeningenFile);
@@ -123,67 +193,170 @@ void setup() {
   thumb.gyroSetup(0x68, Wire);
   fingers.gyroSetup(0x68, Wire1);
 
+  File queries = SD.open("/queries.json");
+
+  if(!queries){
+    Serial.println("Failed to open json file");
+    return;
+  }
+  size_t size = queries.size();
+  std::unique_ptr<char[]> buf(new char[size]);
+  queries.readBytes(buf.get(), size);
+  JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, buf.get());
+
+  if(error){
+    Serial.println("Failed to parse Json file");
+    return;
+  }
+
+  char *zErrMsg = 0;
+  int rc;
+  sqlite3_initialize();
+  if(openDb("/sd/databaseGG.db",&db1)){
+    return;
+  }
+  else{
+    Serial.println("failed to open database");
+  }
+
+  for(JsonPair keyValue : doc["create"].as<JsonObject>()){
+    const char* tableName = keyValue.key().c_str();
+    const char* createCommand = keyValue.value();
+    
+    rc = db_exec(db1, createCommand);
+    if(rc != SQLITE_OK){
+      sqlite3_close(db1);
+      return;
+    }
+  }
+
+  queries.close();
+  sqlite3_close(db1);
+
   showFigure(smiley, 50);
-  playsound(NOTE_C4, 250);
-  playsound(NOTE_E4, 250);
-  playsound(NOTE_G4, 250);
-  playsound(NOTE_C5, 250);
+  //playsound(NOTE_C4, 250);
+  //playsound(NOTE_E4, 250);
+  //playsound(NOTE_G4, 250);
+  //playsound(NOTE_C5, 250);
   delay(1000);
   off();
+  
+
+  // WiFi.begin(ssid, password);
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   delay(500);
+  //   Serial.print(".");
+  // }
+  // // Print local IP address and start web server
+  // Serial.println();
+  // Serial.println(WiFi.localIP());
+
+  // std::vector<String> directories;
+  // directories.push_back("/webpage");
+
+  // File root = SD.open(directories[0]);
+  // if(!root){
+  //   Serial.println("Opening directory failed");
+  //   return;
+  // }
+  // if(!root.isDirectory()){
+  //   Serial.println("Not a directory");
+  //   return;
+  // }
+  // File file = root.openNextFile();
+  // while(directories.size() > 0){
+  //   while(file){
+  //     if(file.isDirectory()){
+  //       directories.push_back(directories[0] + "/" + file.name());
+  //     }
+  //     else{
+  //       String filePath = directories[0] + "/"+ file.name();
+  //       String fileMime = getMime(file.name());
+  //       Serial.println(fileMime);
+  //       String requestPath = "";
+  //       filePath.replace("/webpage", "");
+  //       requestPath = filePath;
+  //       filePath = directories[0] + "/"+ file.name();
+  //       Serial.println(filePath);
+  //       if(requestPath == "/index.html"){
+  //         server.on("/", HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
+  //           request->send(SD, filePath, fileMime);
+  //         });
+  //       }
+  //       const char* requestCString = requestPath.c_str();
+  //       Serial.println(requestCString);
+  //       server.on(requestCString, HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
+  //         request->send(SD, filePath, fileMime);
+  //       });
+  //     }
+  //     file = root.openNextFile();
+  //   }
+  //   directories.erase(directories.begin());
+  //   if(directories.size() >0){
+  //     root = SD.open(directories[0]);
+  //     file = root.openNextFile();
+  //   }
+  // }
+  // Serial.println("while done");
+
+  // server.begin();
+
+  Serial.println("server began");
 }
 
 void loop(){
-  Serial.println("geef de oefeningen reeks in");
-  while(Serial.available() == 0);
+  // Serial.println("geef de oefeningen reeks in");
+  // while(Serial.available() == 0);
 
-  std::vector<std::array<int, 3>> oefeningen;
-  int oefeningenreek = Serial.parseInt();
-  for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
-    int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
-    bool oefeningKlaar = false;
-    Serial.println(oefeningenArray[oefening]);
-    if(oefeningenArray[oefening] != "p"){
-      oefeningen = toIntVector(oefeningenArray[oefening]);
+  // std::vector<std::array<int, 3>> oefeningen;
+  // int oefeningenreek = Serial.parseInt();
+  // for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
+  //   int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
+  //   bool oefeningKlaar = false;
+  //   Serial.println(oefeningenArray[oefening]);
+  //   if(oefeningenArray[oefening] != "p"){
+  //     oefeningen = toIntVector(oefeningenArray[oefening]);
 
-      while (oefeningKlaar == false){
-        std::array<int, 3> coHand = hand.gyroData();
-        std::array<int, 3> coThumb = thumb.gyroData();
-        std::array<int, 3> coFingers = fingers.gyroData();
+  //     while (oefeningKlaar == false){
+  //       std::array<int, 3> coHand = hand.gyroData();
+  //       std::array<int, 3> coThumb = thumb.gyroData();
+  //       std::array<int, 3> coFingers = fingers.gyroData();
 
-        std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
-        std::array<bool, 3> boolArray;
-        for(int i = 0; i < oefeningen.size(); i++){
-          for(int j = 0; j < oefeningen[i].size(); j++){
-            if(oefeningen[i][j] != 0){
-              boolArray[i] = true;
-            }
-          }
-        }
+  //       std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
+  //       std::array<bool, 3> boolArray;
+  //       for(int i = 0; i < oefeningen.size(); i++){
+  //         for(int j = 0; j < oefeningen[i].size(); j++){
+  //           if(oefeningen[i][j] != 0){
+  //             boolArray[i] = true;
+  //           }
+  //         }
+  //       }
 
-        for(int i = 0; i < oefeningen.size(); i++){
-          if(boolArray[i] == true){
-            if(oefeningen[i] == co2D[i]){
-              oefeningKlaar = true;
-            }
-          }
-        }
-      }
-    }
-    else{
-      while (oefeningKlaar == false){
-        uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
-        if (fsrReading > 2500){
-          oefeningKlaar = true;
-        }
-      }
-    }
-  showFigure(smiley, 50);
-  playsound(NOTE_C4, 250);
-  playsound(NOTE_E4, 250);
-  playsound(NOTE_G4, 250);
-  playsound(NOTE_C5, 250);
-  off();
-    Serial.println("oefening klaar");
-  }
-  Serial.println("oefeningenreeks klaar");
+  //       for(int i = 0; i < oefeningen.size(); i++){
+  //         if(boolArray[i] == true){
+  //           if(oefeningen[i] == co2D[i]){
+  //             oefeningKlaar = true;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   else{
+  //     while (oefeningKlaar == false){
+  //       uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
+  //       if (fsrReading > 2500){
+  //         oefeningKlaar = true;
+  //       }
+  //     }
+  //   }
+  // showFigure(smiley, 50);
+  // playsound(NOTE_C4, 250);
+  // playsound(NOTE_E4, 250);
+  // playsound(NOTE_G4, 250);
+  // playsound(NOTE_C5, 250);
+  // off();
+  //   Serial.println("oefening klaar");
+  // }
+  // Serial.println("oefeningenreeks klaar");
 }

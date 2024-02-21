@@ -1,0 +1,16 @@
+{
+    "create":{
+        "User": "CREATE TABLE IF NOT EXISTS User (userID INTEGER PRIMARY KEY AUTOINCREMENT, firstName TEXT, lastName TEXT);",
+        "ExerciseSequence": "CREATE TABLE IF NOT EXISTS ExerciseSequence (exSQID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT);",
+        "Exercise": "CREATE TABLE IF NOT EXISTS Exercise (exID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, picture TEXT, description TEXT);",
+        "UserExcerciseSequence": "CREATE TABLE IF NOT EXISTS UserExcerciseSequence (userID INTEGER, exSQID INTEGER,PRIMARY KEY (userID, exSQID),FOREIGN KEY (userID) REFERENCES User(userID),FOREIGN KEY (exSQID) REFERENCES ExerciseSequence(exSQID));",
+        "ExerciseSequenceList": "CREATE TABLE IF NOT EXISTS ExerciseSequenceList (exSQID INTEGER, exID INTEGER,PRIMARY KEY (exSQID, exID),FOREIGN KEY (exSQID) REFERENCES ExerciseSequence(exSQID),FOREIGN KEY (exID) REFERENCES Exercise(exID));",
+        "SuccessRate": "CREATE TABLE IF NOT EXISTS SuccessRate (userID INTEGER, exSQID INTEGER, successes INTEGER, tries INTEGER, PRIMARY KEY (userID, exSQID),FOREIGN KEY (userID) REFERENCES User(userID),FOREIGN KEY (exSQID) REFERENCES ExerciseSequence(exSQID));",
+        "RewardLEDRing": "CREATE TABLE IF NOT EXISTS RewardLEDRing (rwLEDID INTEGER PRIMARY KEY AUTOINCREMENT);",
+        "LEDRingHexcode": "CREATE TABLE IF NOT EXISTS LEDRingHexcode (hexID INTEGER PRIMARY KEY AUTOINCREMENT, hexcode TEXT);",
+        "LEDRingHexcodeList": "CREATE TABLE IF NOT EXISTS LEDRingHexcodeList (rwLEDID INTEGER, hexID INTEGER, place INTEGER, PRIMARY KEY (rwLEDID, hexID),FOREIGN KEY (rwLEDID) REFERENCES RewardLEDRing(rwLEDID),FOREIGN KEY (hexID) REFERENCES LEDRingHexcode(hexID));",
+        "RewardMusic": "CREATE TABLE IF NOT EXISTS RewardMusic (rwMID INTEGER PRIMARY KEY AUTOINCREMENT);",
+        "Note": "CREATE TABLE IF NOT EXISTS Note (noteID INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT);",
+        "RewardMusicList": "CREATE TABLE IF NOT EXISTS RewardMusicList (rwMID INTEGER, noteID INTEGER, place INTEGER, PRIMARY KEY (rwMID, noteID),FOREIGN KEY (rwMID) REFERENCES RewardMusic(rwMID),FOREIGN KEY (noteID) REFERENCES Note(noteID));"
+    }
+}
