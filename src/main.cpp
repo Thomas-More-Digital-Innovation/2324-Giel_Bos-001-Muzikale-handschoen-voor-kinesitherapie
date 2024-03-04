@@ -22,8 +22,7 @@
 #include <ESPAsyncWebServer.h>
 #include "FS.h"
 
-#include <sqlite3.h>
-#include <ArduinoJson.h>
+#include <ArduinoJson.h> 
 
 const char* ssid = "iPhone van Matt";
 const char* password = "helloThisIsAPassword";
@@ -65,8 +64,6 @@ std::array<string,2> wifiCred;
 Adafruit_NeoPixel ledring = Adafruit_NeoPixel(12, PIN_LED,  NEO_GRB + NEO_KHZ800);
 
 std::array<std::array<uint32_t, 3>,12> smiley;
-
-sqlite3 *db1;
 
 
 void off(){
@@ -111,44 +108,6 @@ String getMime(String filename){
   }
 }
 
-const char* data = "Callback function called";
-static int callback(void *data, int argc, char **argv, char **azColName){
-   int i;
-   Serial.printf("%s: ", (const char*)data);
-   for (i = 0; i<argc; i++){
-       Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   }
-   Serial.printf("\n");
-   return 0;
-}
-
-char *zErrMsg = 0;
-int db_exec(sqlite3 *db, const char *sql) {
-   Serial.println(sql);
-   long start = micros();
-   int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-   if (rc != SQLITE_OK) {
-       Serial.printf("SQL error: %s\n", zErrMsg);
-       sqlite3_free(zErrMsg);
-   } else {
-       Serial.printf("Operation done successfully\n");
-   }
-   Serial.print(F("Time taken:"));
-   Serial.println(micros()-start);
-   return rc;
-}
-
-int openDb(const char *filename, sqlite3 **db) {
-   int rc = sqlite3_open(filename, db);
-   if (rc) {
-       Serial.printf("Can't open database: %s\n", sqlite3_errmsg(*db));
-       return rc;
-   } else {
-       Serial.printf("Opened database successfully\n");
-   }
-   return rc;
-}
-
 void setup() {
   Serial.begin(115200);      // open serial monitor
 
@@ -180,59 +139,10 @@ void setup() {
     Serial.println("initialization failed!");
     while (1);
   }
-  Serial.println("initialization done.");
-  SPI.begin();
-
-  oefeningenFile = SD.open("/oefeningen.txt");
-  oefeningenArray = toStringVector(oefeningenFile);
-
-  reeksenFile = SD.open("/reeksen.txt");
-  reeksenArray = toStringVector(reeksenFile);
 
   hand.gyroSetup(0x69, Wire);
   thumb.gyroSetup(0x68, Wire);
   fingers.gyroSetup(0x68, Wire1);
-
-  File queries = SD.open("/queries.json");
-
-  if(!queries){
-    Serial.println("Failed to open json file");
-    return;
-  }
-  size_t size = queries.size();
-  std::unique_ptr<char[]> buf(new char[size]);
-  queries.readBytes(buf.get(), size);
-  JsonDocument doc;
-  DeserializationError error = deserializeJson(doc, buf.get());
-
-  if(error){
-    Serial.println("Failed to parse Json file");
-    return;
-  }
-
-  char *zErrMsg = 0;
-  int rc;
-  sqlite3_initialize();
-  if(openDb("/sd/databaseGG.db",&db1)){
-    return;
-  }
-  else{
-    Serial.println("failed to open database");
-  }
-
-  for(JsonPair keyValue : doc["create"].as<JsonObject>()){
-    const char* tableName = keyValue.key().c_str();
-    const char* createCommand = keyValue.value();
-    
-    rc = db_exec(db1, createCommand);
-    if(rc != SQLITE_OK){
-      sqlite3_close(db1);
-      return;
-    }
-  }
-
-  queries.close();
-  sqlite3_close(db1);
 
   showFigure(smiley, 50);
   //playsound(NOTE_C4, 250);
@@ -243,120 +153,142 @@ void setup() {
   off();
   
 
-  // WiFi.begin(ssid, password);
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   delay(500);
-  //   Serial.print(".");
-  // }
-  // // Print local IP address and start web server
-  // Serial.println();
-  // Serial.println(WiFi.localIP());
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  // Print local IP address and start web server
+  Serial.println();
+  Serial.println(WiFi.localIP());
 
-  // std::vector<String> directories;
-  // directories.push_back("/webpage");
+  std::vector<String> directories;
+  directories.push_back("/webpage");
 
-  // File root = SD.open(directories[0]);
-  // if(!root){
-  //   Serial.println("Opening directory failed");
-  //   return;
-  // }
-  // if(!root.isDirectory()){
-  //   Serial.println("Not a directory");
-  //   return;
-  // }
-  // File file = root.openNextFile();
-  // while(directories.size() > 0){
-  //   while(file){
-  //     if(file.isDirectory()){
-  //       directories.push_back(directories[0] + "/" + file.name());
-  //     }
-  //     else{
-  //       String filePath = directories[0] + "/"+ file.name();
-  //       String fileMime = getMime(file.name());
-  //       Serial.println(fileMime);
-  //       String requestPath = "";
-  //       filePath.replace("/webpage", "");
-  //       requestPath = filePath;
-  //       filePath = directories[0] + "/"+ file.name();
-  //       Serial.println(filePath);
-  //       if(requestPath == "/index.html"){
-  //         server.on("/", HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
-  //           request->send(SD, filePath, fileMime);
-  //         });
-  //       }
-  //       const char* requestCString = requestPath.c_str();
-  //       Serial.println(requestCString);
-  //       server.on(requestCString, HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
-  //         request->send(SD, filePath, fileMime);
-  //       });
-  //     }
-  //     file = root.openNextFile();
-  //   }
-  //   directories.erase(directories.begin());
-  //   if(directories.size() >0){
-  //     root = SD.open(directories[0]);
-  //     file = root.openNextFile();
-  //   }
-  // }
-  // Serial.println("while done");
+  File root = SD.open(directories[0]);
+  if(!root){
+    Serial.println("Opening directory failed");
+    return;
+  }
+  if(!root.isDirectory()){
+    Serial.println("Not a directory");
+    return;
+  }
+  File file = root.openNextFile();
+  while(directories.size() > 0){
+    while(file){
+      if(file.isDirectory()){
+        directories.push_back(directories[0] + "/" + file.name());
+      }
+      else{
+        String filePath = directories[0] + "/"+ file.name();
+        String fileMime = getMime(file.name());
+        Serial.println(fileMime);
+        String requestPath = "";
+        filePath.replace("/webpage", "");
+        requestPath = filePath;
+        filePath = directories[0] + "/"+ file.name();
+        Serial.println(filePath);
+        if(requestPath == "/index.html"){
+          server.on("/", HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
+            request->send(SD, filePath, fileMime);
+          });
+        }
+        const char* requestCString = requestPath.c_str();
+        Serial.println(requestCString);
+        server.on(requestCString, HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
+          request->send(SD, filePath, fileMime);
+        });
+      }
+      file = root.openNextFile();
+    }
+    directories.erase(directories.begin());
+    if(directories.size() >0){
+      root = SD.open(directories[0]);
+      file = root.openNextFile();
+    }
+  }
 
-  // server.begin();
+  server.on("/getex", HTTP_GET, [](AsyncWebServerRequest *request){
+    File file = SD.open("/database/exercises.json");
+        if(!file){
+      request->send(500, "text/plain", "Failed to open exercises file");
+      return;
+    }
+    
+    // Parse the JSON data
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, file);
+    if (error) {
+      request->send(500, "text/plain", "Failed to parse exercises file");
+      return;
+    }
+    
+    // Send JSON response
+    String json;
+    serializeJsonPretty(doc, json);
+    request->send(200, "application/json", json);
+  });
+
+  server.begin();
 
   Serial.println("server began");
 }
 
+void executeExSequence(){
+
+  std::vector<std::array<int, 3>> oefeningen;
+  int oefeningenreek = Serial.parseInt();
+  for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
+    int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
+    bool oefeningKlaar = false;
+    Serial.println(oefeningenArray[oefening]);
+    if(oefeningenArray[oefening] != "p"){
+      oefeningen = toIntVector(oefeningenArray[oefening]);
+
+      while (oefeningKlaar == false){
+        std::array<int, 3> coHand = hand.gyroData();
+        std::array<int, 3> coThumb = thumb.gyroData();
+        std::array<int, 3> coFingers = fingers.gyroData();
+
+        std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
+        std::array<bool, 3> boolArray;
+        for(int i = 0; i < oefeningen.size(); i++){
+          for(int j = 0; j < oefeningen[i].size(); j++){
+            if(oefeningen[i][j] != 0){
+              boolArray[i] = true;
+            }
+          }
+        }
+
+        for(int i = 0; i < oefeningen.size(); i++){
+          if(boolArray[i] == true){
+            if(oefeningen[i] == co2D[i]){
+              oefeningKlaar = true;
+            }
+          }
+        }
+      }
+    }
+    else{
+      while (oefeningKlaar == false){
+        uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
+        if (fsrReading > 2500){
+          oefeningKlaar = true;
+        }
+      }
+    }
+  showFigure(smiley, 50);
+  playsound(NOTE_C4, 250);
+  playsound(NOTE_E4, 250);
+  playsound(NOTE_G4, 250);
+  playsound(NOTE_C5, 250);
+  off();
+    Serial.println("oefening klaar");
+  }
+  Serial.println("oefeningenreeks klaar");
+}
+
 void loop(){
-  // Serial.println("geef de oefeningen reeks in");
-  // while(Serial.available() == 0);
-
-  // std::vector<std::array<int, 3>> oefeningen;
-  // int oefeningenreek = Serial.parseInt();
-  // for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
-  //   int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
-  //   bool oefeningKlaar = false;
-  //   Serial.println(oefeningenArray[oefening]);
-  //   if(oefeningenArray[oefening] != "p"){
-  //     oefeningen = toIntVector(oefeningenArray[oefening]);
-
-  //     while (oefeningKlaar == false){
-  //       std::array<int, 3> coHand = hand.gyroData();
-  //       std::array<int, 3> coThumb = thumb.gyroData();
-  //       std::array<int, 3> coFingers = fingers.gyroData();
-
-  //       std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
-  //       std::array<bool, 3> boolArray;
-  //       for(int i = 0; i < oefeningen.size(); i++){
-  //         for(int j = 0; j < oefeningen[i].size(); j++){
-  //           if(oefeningen[i][j] != 0){
-  //             boolArray[i] = true;
-  //           }
-  //         }
-  //       }
-
-  //       for(int i = 0; i < oefeningen.size(); i++){
-  //         if(boolArray[i] == true){
-  //           if(oefeningen[i] == co2D[i]){
-  //             oefeningKlaar = true;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   else{
-  //     while (oefeningKlaar == false){
-  //       uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
-  //       if (fsrReading > 2500){
-  //         oefeningKlaar = true;
-  //       }
-  //     }
-  //   }
-  // showFigure(smiley, 50);
-  // playsound(NOTE_C4, 250);
-  // playsound(NOTE_E4, 250);
-  // playsound(NOTE_G4, 250);
-  // playsound(NOTE_C5, 250);
-  // off();
-  //   Serial.println("oefening klaar");
-  // }
-  // Serial.println("oefeningenreeks klaar");
+  
 }

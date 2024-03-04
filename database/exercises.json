@@ -1,0 +1,20 @@
+[
+    {
+      "exID": 1,
+      "name": "Push-up",
+      "picture": "images/ex0.jpg",
+      "description": "Start in a plank position with your hands shoulder-width apart..."
+    },
+    {
+      "exID": 2,
+      "name": "Squats",
+      "picture": "images/ex1.jpg",
+      "description": "Stand with your feet shoulder-width apart..."
+    },
+    {
+      "exID": 3,
+      "name": "Crunches",
+      "picture": "images/ex2.jpg",
+      "description": "Lie on your back with your knees bent and your hands behind your head..."
+    }
+  ]

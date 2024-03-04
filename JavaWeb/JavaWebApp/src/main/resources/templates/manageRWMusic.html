@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muziekjes</title>
+    <link rel="stylesheet" href="../static/css/basicStyling.css">
+    <link rel="stylesheet" href="../static/css/manageRWMusic.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a href="index.html"><span>Oefeningen</span></a>
+            <a href="manageRWLED.html" class="active"><span>Beloningen</span></a>
+            <a href="managePatients.html">Patiënten</a>
+        </div>
+        <div>
+            <a href="manageRWLED.html"><span>LED Ring</span></a>
+            <a href="manageRWMusic.html" class="active"><span>Muziekjes</span></a>
+        </div>
+    </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>LED beloning toevoegen</span>
+    </div>
+
+    <div id="musics">
+        <div>
+            <ul>
+                <li>D</li>
+                <li>F</li>
+                <li>E</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+                <li>A</li>
+            </ul>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <ul>
+                <li>D</li>
+                <li>F</li>
+                <li>E</li>
+                <li>A</li>
+            </ul>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <ul>
+                <li>D</li>
+                <li>F</li>
+                <li>E</li>
+                <li>A</li>
+            </ul>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <ul>
+                <li>D</li>
+                <li>F</li>
+                <li>E</li>
+                <li>A</li>
+            </ul>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <ul>
+                <li>D</li>
+                <li>F</li>
+                <li>E</li>
+                <li>A</li>
+            </ul>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+
+        <div>
+            <ul>
+                <li>A</li>
+                <li>B</li>
+                <li>C</li>
+                <li>D</li>
+            </ul>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="popup" style="display: none;">
+        <div class="customForm">
+            <ul id="musicNotes">
+                <li onclick="addNote(this)">A</li>
+                <li onclick="addNote(this)">B</li>
+                <li onclick="addNote(this)">C</li>
+                <li onclick="addNote(this)">D</li>
+                <li onclick="addNote(this)">E</li>
+                <li onclick="addNote(this)">F</li>
+            </ul>
+
+            <ul id="newMusic">
+
+            </ul>
+            <div class="next">
+                <div id="approve" onclick="hidePopUp()">
+                    Bevestigen
+                </div>
+                <div id="cancel" onclick="hidePopUp()">
+                    Annuleren
+                </div>  
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "inline-block";
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            const list = document.getElementById("newMusic");
+            list.innerHTML = "";
+            div.style.display = "none";
+        }
+        function addNote(note){
+            const list = document.getElementById("newMusic");
+            const li = document.createElement("li");
+            li.innerHTML = note.innerHTML;
+            list.appendChild(li);
+        }
+    </script>
+</body>
+</html>

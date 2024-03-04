@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningen beheren</title>
+    <link rel="stylesheet" href="../static/css/basicStyling.css">
+    <link rel="stylesheet" href="../static/css/manageEx.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a href="index.html" class="active"><span>Oefeningen</span></a>
+            <a href="manageRWLED.html"><span>Beloningen</span></a>
+            <a href="managePatients.html">Patiënten</a>
+        </div>
+        <div>
+            <a href="index.html"><span>Oefeningenreeks starten</span></a>
+            <a href="manageEx.html" class="active"><span>Oefeningen beheren</span></a>
+            <a href="manageExSQ.html"><span>Oefeningenreeks beheren</span></a>
+        </div>
+    </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>Oefening toevoegen</span>
+        
+    </div>
+
+    <div id="ex">
+    </div>
+
+    <div id="popup" style="display: none;">
+        <form action="">
+
+            <div>
+                <label for="handPos">Hand positie</label>
+                <input type="radio" name="typeEX" id="handPos"  checked>        
+            </div>
+
+
+            <label for="handpalm">Handpalm</label>
+            <select name="handpalm" id="handpalm">
+                <option value="up">Boven</option>
+                <option value="left">Links</option>
+                <option value="down">Onder</option>
+                <option value="right">Rechts</option>
+                <option value="front">Vooruit</option>
+                <option value="back">Achteruit</option>
+                <option value="free">Vrije positie</option>
+            </select>
+
+            <label for="fingers">Vingers</label>
+            <select name="fingers" id="fingers">
+                <option value="folded">Geplooid</option>
+                <option value="stretched">Gestrekt</option>
+                <option value="free">Vrije positie</option>
+            </select>
+
+            <label for="thumb">Duim</label>
+            <select name="thumb" id="thumb">
+                <option value="toHand">Tegen de hand</option>
+                <option value="toPalm">Tegen de handpalm</option>
+                <option value="stretched">Gestrekt</option>
+                <option value="free">Vrije positie</option>
+            </select>
+
+            <div>
+                <label for="press">Druk proef</label>
+                <input type="radio" name="typeEX" id="press">
+            </div>
+
+            <label for="file">Upload foto</label>
+            <input type="file" name="foto" id="foto">
+
+            <div class="next">
+                <input type="submit" value="Bevestigen">
+                <div onclick="hidePopUp()">
+                    Annuleren
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+    <script>
+        function displayImages() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                var data = JSON.parse(this.responseText);
+                displayExData(data);
+            }
+            };
+            xhttp.open("GET", "/getex", true);
+            xhttp.send();
+        }
+
+        function displayExData(data){
+
+            const container = document.getElementById('ex');
+            if (data) {
+                data.forEach(function(exercise) {
+                    const div = document.createElement('div');
+                    const img = document.createElement('img');
+                    const name = document.createElement('p');
+                    name.textContent = exercise.name;
+                    const description = document.createElement('p');
+                    description.textContent = exercise.description;
+                    const div2 = document.createElement('div');
+                    const pen = document.createElement('span');
+                    pen.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                    const trash = document.createElement('span');
+                    trash.innerHTML = '<i class="fa-solid fa-trash"></i>';
+                    img.src = exercise.picture;
+                    img.alt = exercise.name;
+                    div.appendChild(img);
+                    div.appendChild(name);
+                    div.appendChild(description);
+                    div2.appendChild(pen);
+                    div2.appendChild(trash);
+                    div.appendChild(div2);
+                    container.appendChild(div);
+                });
+            }
+            else{
+                exerciseContainer.textContent = "Failed to fetch exercise data";
+            }
+        }
+        window.onload = displayImages;
+
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "inline-block";
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "none";
+        }
+    
+    </script>
+</body>
+</html>

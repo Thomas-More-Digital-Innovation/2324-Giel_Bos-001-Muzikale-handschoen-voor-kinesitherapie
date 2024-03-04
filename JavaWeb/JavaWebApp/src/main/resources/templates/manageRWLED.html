@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Ring</title>
+    <link rel="stylesheet" href="../static/css/basicStyling.css">
+    <link rel="stylesheet" href="../static/css/manageRWLED.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a href="index.html"><span>Oefeningen</span></a>
+            <a href="manageRWLED.html" class="active"><span>Beloningen</span></a>
+            <a href="managePatients.html">Patiënten</a>
+        </div>
+        <div>
+            <a href="manageRWLED.html" class="active"><span>LED Ring</span></a>
+            <a href="manageRWMusic.html"><span>Muziekjes</span></a>
+        </div>
+    </nav>
+    <div id="addEX" onclick="displayPopUp()">
+        <span>LED beloning toevoegen</span>
+        
+    </div>
+    <div id="popup" style="display: none;">
+        <div class="customForm">
+             <div id="customsvg">
+            </div>
+            <div class="next">
+                <div id="approve" onclick="hidePopUp()">
+                    Bevestigen
+                </div>
+                <div id="cancel" onclick="hidePopUp()">
+                    Annuleren
+                </div>  
+            </div>
+        </div>
+    </div>
+    <div id="LEDRings">
+        <div>
+            <svg width="210" height="210">
+                <circle cx="105" cy="105" r="85" stroke="black" stroke-width="30" fill="none"/>
+                <circle cx="127" cy="23" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="0"/>
+                <circle cx="165" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="1"/>
+                <circle cx="187" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="2"/>
+                <circle cx="187" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="3"/>
+                <circle cx="165" cy="165" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="4"/>
+                <circle cx="127" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="5"/>
+                <circle cx="83" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="6"/>
+                <circle cx="44" cy="165" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="7"/>
+                <circle cx="23" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="8"/>
+                <circle cx="23" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="9"/>
+                <circle cx="44" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="10"/>
+                <circle cx="83" cy="23" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="11"/>
+            </svg>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <svg width="210" height="210">
+                <circle cx="105" cy="105" r="85" stroke="black" stroke-width="30" fill="none"/>
+                <circle cx="127" cy="23" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="0"/>
+                <circle cx="165" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="1"/>
+                <circle cx="187" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="2"/>
+                <circle cx="187" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="3"/>
+                <circle cx="165" cy="165" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="4"/>
+                <circle cx="127" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="5"/>
+                <circle cx="83" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="6"/>
+                <circle cx="44" cy="165" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="7"/>
+                <circle cx="23" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="8"/>
+                <circle cx="23" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="9"/>
+                <circle cx="44" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="10"/>
+                <circle cx="83" cy="23" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="11"/>
+            </svg>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <svg width="210" height="210">
+                <circle cx="105" cy="105" r="85" stroke="black" stroke-width="30" fill="none"/>
+                <circle cx="127" cy="23" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="0"/>
+                <circle cx="165" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="1"/>
+                <circle cx="187" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="2"/>
+                <circle cx="187" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="3"/>
+                <circle cx="165" cy="165" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="4"/>
+                <circle cx="127" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="5"/>
+                <circle cx="83" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="6"/>
+                <circle cx="44" cy="165" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="7"/>
+                <circle cx="23" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="8"/>
+                <circle cx="23" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="9"/>
+                <circle cx="44" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="10"/>
+                <circle cx="83" cy="23" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="11"/>
+            </svg>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+        <div>
+            <svg width="210" height="210">
+                <circle cx="105" cy="105" r="85" stroke="black" stroke-width="30" fill="none"/>
+                <circle cx="127" cy="23" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="0"/>
+                <circle cx="165" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="1"/>
+                <circle cx="187" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="2"/>
+                <circle cx="187" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="3"/>
+                <circle cx="165" cy="165" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="4"/>
+                <circle cx="127" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="5"/>
+                <circle cx="83" cy="187" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="6"/>
+                <circle cx="44" cy="165" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="7"/>
+                <circle cx="23" cy="127" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="8"/>
+                <circle cx="23" cy="83" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="9"/>
+                <circle cx="44" cy="44" r="12" stroke="white" stroke-width="2" fill="blue" data-circleid="10"/>
+                <circle cx="83" cy="23" r="12" stroke="white" stroke-width="2" fill="blue"data-circleid="11"/>
+            </svg>
+            <div class="icons">
+                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            const customsvg = document.getElementById("customsvg");
+            const backcirclediv = document.createElement("div");
+            const backsvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            backsvg.setAttribute("width", "210");
+            backsvg.setAttribute("height", "210");
+            const backcircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            backcircle.setAttribute("cx", "105");
+            backcircle.setAttribute("cy", "105");
+            backcircle.setAttribute("r", "85");
+            backcircle.setAttribute("fill", "none");
+            backcircle.setAttribute("stroke", "black");
+            backcircle.setAttribute("stroke-width", "30");
+            backsvg.appendChild(backcircle);
+            
+            backcirclediv.appendChild(backsvg);
+            customsvg.appendChild(backcirclediv);
+            
+            for(let i=0; i<12; i++){
+                const circleContainer = document.createElement("div");
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", "210");
+                svg.setAttribute("height", "210");
+                const colorInput = document.createElement("input");
+
+                svg.setAttribute("width", "210");
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                const cx = Math.floor(105+ Math.cos((15 + (i*30)) * Math.PI / 180)*85);
+                const cy = Math.floor(105+ Math.sin((15 + (i*30)) * Math.PI / 180)*85);
+                const cxString = cx.toString();
+                const cyString = cy.toString();
+                circle.setAttribute("cx", cxString);
+                circle.setAttribute("cy", cyString);
+                circle.setAttribute("r", "12");
+                circle.setAttribute("fill", "blue");
+                circle.setAttribute("stroke", "white");
+                circle.setAttribute("stroke-width", "2");
+                circle.setAttribute("data-circleid", i.toString());
+                svg.appendChild(circle);
+                circleContainer.appendChild(svg);
+
+                const inputx = Math.floor(cx-13).toString();
+                const inputy = Math.floor(cy-13).toString();
+
+                const stylestring = "left: " + inputx + "px; top: "+ inputy +"px;";
+                colorInput.setAttribute("type", "color");
+                colorInput.setAttribute("name", "color");
+                colorInput.setAttribute("id", "l1");
+                colorInput.setAttribute("class", "colorpicker");
+                colorInput.setAttribute("style", stylestring);
+                colorInput.setAttribute("data-inputid", i.toString());
+                colorInput.addEventListener("input", function(event){
+                    const query = '[data-circleid="' + colorInput.getAttribute("data-inputid") + '"]';
+                    const circle = document.querySelector(query);
+                    const color = event.target.value;
+                    circle.setAttribute("fill", color);
+                });
+
+                circleContainer.appendChild(colorInput);
+
+                customsvg.appendChild(circleContainer)
+            }
+
+            div.style.display = "inline-block";
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            const customsvg = document.getElementById("customsvg");
+            customsvg.innerHTML = "";
+            div.style.display = "none";
+        }
+
+    </script>
+</body>
+</html>
