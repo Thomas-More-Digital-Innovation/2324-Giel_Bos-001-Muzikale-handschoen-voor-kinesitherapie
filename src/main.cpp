@@ -1,38 +1,56 @@
 // - INCLUDES - //
 #include <Arduino.h>                 // arduino core
 
-#include <SD.h>                      // sd card library
-#include <SPI.h>                     // spi library for sd card
-#include <fileToVector.h>
-#include <stdio.h>
-#include <stdlib.h> 
-
 #include <Adafruit_MPU6050.h>        // mpu6050 library
 #include <Adafruit_Sensor.h>         // sensor library for mpu6050
 #include <Wire.h>                    // wire library for mpu6050
 #include <Adafruit_BusIO_Register.h> // busio library for mpu6050
 #include <gyro.h>
 
+#include<fileToVector.h>
+
 #include <Adafruit_NeoPixel.h>       // neopixel library for ledring
 
 #include <vector>                    // library for dynamic array (vector)
 
-#include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include "FS.h"
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h>
 
-#include <ArduinoJson.h> 
+BLEServer* pServer = NULL;
+BLECharacteristic* pSensorCharacteristic = NULL;
+BLECharacteristic* pLedCharacteristic = NULL;
+bool deviceConnected = false;
+bool oldDeviceConnected = false;
+uint32_t value = 0;
 
-const char* ssid = "iPhone van Matt";
-const char* password = "helloThisIsAPassword";
+#define SERVICE_UUID        "19b10000-e8f2-537e-4f6c-d104768a1214"
+#define SENSOR_CHARACTERISTIC_UUID "19b10001-e8f2-537e-4f6c-d104768a1214"
+#define LED_CHARACTERISTIC_UUID "19b10002-e8f2-537e-4f6c-d104768a1214"
 
-AsyncWebServer server(80);
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
+class MyCharacteristicCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic* onCharacteristic) {
+        std::string value = onCharacteristic->getValue();
+        Serial.println(value.c_str());
+        if (value.length() > 0) {
+
+        }
+    }
+};
+
 using namespace std;
 
-File reeksenFile;
-std::vector<String> reeksenArray;
-File oefeningenFile;                         // define file for sd card
+std::vector<String> reeksenArray;                 // define file for sd card
 std::vector<String> oefeningenArray;
 
 #define SCL_1 22 // pin for mpu6050 clock - I2C 1
@@ -59,7 +77,6 @@ gyro hand(mpu_hand);
 gyro thumb(mpu_thumb);
 gyro fingers(mpu_fingers);
 
-std::array<string,2> wifiCred;
 
 Adafruit_NeoPixel ledring = Adafruit_NeoPixel(12, PIN_LED,  NEO_GRB + NEO_KHZ800);
 
@@ -90,22 +107,75 @@ void playsound(int note, int duration){
   tone(PIN_SND, note, duration);
 }
 
-String getMime(String filename){
-  if (filename.endsWith(".html")) {
-    return "text/html";
-  } else if (filename.endsWith(".css")) {
-    return "text/css";
-  } else if (filename.endsWith(".js")) {
-    return "application/javascript";
-  } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
-    return "image/jpeg";
-  } else if (filename.endsWith(".png")) {
-    return "image/png";
-  } else if (filename.endsWith(".gif")) {
-    return "image/gif";
-  } else {
-    return "application/octet-stream";
-  }
+void executeEx(String oefening){
+  Serial.println(oefening);
+
+  bool oefeningKlaar = false;
+    if(oefening != "p"){
+
+      std::vector<std::array<int, 3>> oefeningen =  toIntVector(oefening);
+
+      std::array<bool, 3> boolArray;
+      for(int i= 0; i< boolArray.size(); i++){
+        boolArray[i] = false;
+      }
+
+      for(int i = 0; i < oefeningen.size(); i++){
+        for(int j = 0; j < oefeningen[i].size(); j++){
+          if(oefeningen[i][j] != 0){
+            boolArray[i] = true;
+          }
+        }
+      }
+
+      for(int i= 0; i< boolArray.size(); i++){
+        Serial.println(boolArray[i]);
+      }
+
+      while (oefeningKlaar == false){
+        std::array<int, 3> coHand = hand.gyroData();
+        std::array<int, 3> coThumb = thumb.gyroData();
+        std::array<int, 3> coFingers = fingers.gyroData();
+
+        std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
+
+        for (int i = 0; i < 3; i++) {
+          for (int j = 0; j < 3; j++) {
+            Serial.print(co2D[i][j]);
+            Serial.print(" ");
+          }
+          Serial.println();
+        }
+        Serial.println();
+        delay(1000);
+
+        // for(int i = 0; i < oefeningen.size(); i++){
+        //   if(boolArray[i] == true){
+        //     if(oefeningen[i] == co2D[i]){
+        //       oefeningKlaar = true;
+        //     }
+        //   }
+        // }
+      }
+    }
+    else{
+      while (oefeningKlaar == false){
+        uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
+        Serial.println(fsrReading);
+        if (fsrReading > 2500){
+          oefeningKlaar = true;
+        }
+      }
+    }
+  showFigure(smiley, 50);
+  // playsound(NOTE_C4, 250);
+  // playsound(NOTE_E4, 250);
+  // playsound(NOTE_G4, 250);
+  // playsound(NOTE_C5, 250);
+  delay(1000);
+  off();
+    Serial.println("oefening klaar");
+
 }
 
 void setup() {
@@ -117,7 +187,6 @@ void setup() {
   Wire1.begin(SDA_2, SCL_2); // I2C bus 2
 
   pinMode(PIN_SND, OUTPUT);
-
   for(int i; i < smiley.size(); i++){
     if((i != 5) && (i != 7) && (i != 9)){
       smiley[i][0] = 5;
@@ -131,18 +200,53 @@ void setup() {
     }
   }
 
-  while (!Serial);
- 
-  Serial.print("Initializing SD card...");
- 
- if (!SD.begin(4)) {
-    Serial.println("initialization failed!");
-    while (1);
-  }
-
   hand.gyroSetup(0x69, Wire);
   thumb.gyroSetup(0x68, Wire);
   fingers.gyroSetup(0x68, Wire1);
+
+  //   // Create the BLE Device
+  // BLEDevice::init("ESP32");
+
+  // // Create the BLE Server
+  // pServer = BLEDevice::createServer();
+  // pServer->setCallbacks(new MyServerCallbacks());
+
+  // // Create the BLE Service
+  // BLEService *pService = pServer->createService(SERVICE_UUID);
+
+  // // Create a BLE Characteristic
+  // pSensorCharacteristic = pService->createCharacteristic(
+  //                     SENSOR_CHARACTERISTIC_UUID,
+  //                     BLECharacteristic::PROPERTY_READ   |
+  //                     BLECharacteristic::PROPERTY_WRITE  |
+  //                     BLECharacteristic::PROPERTY_NOTIFY |
+  //                     BLECharacteristic::PROPERTY_INDICATE
+  //                   );
+
+  // // Create the ON button Characteristic
+  // pLedCharacteristic = pService->createCharacteristic(
+  //                     LED_CHARACTERISTIC_UUID,
+  //                     BLECharacteristic::PROPERTY_WRITE
+  //                   );
+
+  // // Register the callback for the ON button characteristic
+  // pLedCharacteristic->setCallbacks(new MyCharacteristicCallbacks());
+
+  // // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
+  // // Create a BLE Descriptor
+  // pSensorCharacteristic->addDescriptor(new BLE2902());
+  // pLedCharacteristic->addDescriptor(new BLE2902());
+
+  // // Start the service
+  // pService->start();
+
+  // // Start advertising
+  // BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  // pAdvertising->addServiceUUID(SERVICE_UUID);
+  // pAdvertising->setScanResponse(false);
+  // pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
+  // BLEDevice::startAdvertising();
+  // Serial.println("Waiting a client connection to notify...");
 
   showFigure(smiley, 50);
   //playsound(NOTE_C4, 250);
@@ -151,144 +255,26 @@ void setup() {
   //playsound(NOTE_C5, 250);
   delay(1000);
   off();
-  
 
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  // Print local IP address and start web server
-  Serial.println();
-  Serial.println(WiFi.localIP());
-
-  std::vector<String> directories;
-  directories.push_back("/webpage");
-
-  File root = SD.open(directories[0]);
-  if(!root){
-    Serial.println("Opening directory failed");
-    return;
-  }
-  if(!root.isDirectory()){
-    Serial.println("Not a directory");
-    return;
-  }
-  File file = root.openNextFile();
-  while(directories.size() > 0){
-    while(file){
-      if(file.isDirectory()){
-        directories.push_back(directories[0] + "/" + file.name());
-      }
-      else{
-        String filePath = directories[0] + "/"+ file.name();
-        String fileMime = getMime(file.name());
-        Serial.println(fileMime);
-        String requestPath = "";
-        filePath.replace("/webpage", "");
-        requestPath = filePath;
-        filePath = directories[0] + "/"+ file.name();
-        Serial.println(filePath);
-        if(requestPath == "/index.html"){
-          server.on("/", HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
-            request->send(SD, filePath, fileMime);
-          });
-        }
-        const char* requestCString = requestPath.c_str();
-        Serial.println(requestCString);
-        server.on(requestCString, HTTP_GET, [filePath, fileMime](AsyncWebServerRequest *request){
-          request->send(SD, filePath, fileMime);
-        });
-      }
-      file = root.openNextFile();
-    }
-    directories.erase(directories.begin());
-    if(directories.size() >0){
-      root = SD.open(directories[0]);
-      file = root.openNextFile();
-    }
-  }
-
-  server.on("/getex", HTTP_GET, [](AsyncWebServerRequest *request){
-    File file = SD.open("/database/exercises.json");
-        if(!file){
-      request->send(500, "text/plain", "Failed to open exercises file");
-      return;
-    }
-    
-    // Parse the JSON data
-    DynamicJsonDocument doc(1024);
-    DeserializationError error = deserializeJson(doc, file);
-    if (error) {
-      request->send(500, "text/plain", "Failed to parse exercises file");
-      return;
-    }
-    
-    // Send JSON response
-    String json;
-    serializeJsonPretty(doc, json);
-    request->send(200, "application/json", json);
-  });
-
-  server.begin();
-
-  Serial.println("server began");
-}
-
-void executeExSequence(){
-
-  std::vector<std::array<int, 3>> oefeningen;
-  int oefeningenreek = Serial.parseInt();
-  for(int i = 0; i < reeksenArray[oefeningenreek].length(); i++){
-    int oefening = reeksenArray[oefeningenreek].substring(i, i+1).toInt();
-    bool oefeningKlaar = false;
-    Serial.println(oefeningenArray[oefening]);
-    if(oefeningenArray[oefening] != "p"){
-      oefeningen = toIntVector(oefeningenArray[oefening]);
-
-      while (oefeningKlaar == false){
-        std::array<int, 3> coHand = hand.gyroData();
-        std::array<int, 3> coThumb = thumb.gyroData();
-        std::array<int, 3> coFingers = fingers.gyroData();
-
-        std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
-        std::array<bool, 3> boolArray;
-        for(int i = 0; i < oefeningen.size(); i++){
-          for(int j = 0; j < oefeningen[i].size(); j++){
-            if(oefeningen[i][j] != 0){
-              boolArray[i] = true;
-            }
-          }
-        }
-
-        for(int i = 0; i < oefeningen.size(); i++){
-          if(boolArray[i] == true){
-            if(oefeningen[i] == co2D[i]){
-              oefeningKlaar = true;
-            }
-          }
-        }
-      }
-    }
-    else{
-      while (oefeningKlaar == false){
-        uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
-        if (fsrReading > 2500){
-          oefeningKlaar = true;
-        }
-      }
-    }
-  showFigure(smiley, 50);
-  playsound(NOTE_C4, 250);
-  playsound(NOTE_E4, 250);
-  playsound(NOTE_G4, 250);
-  playsound(NOTE_C5, 250);
-  off();
-    Serial.println("oefening klaar");
-  }
-  Serial.println("oefeningenreeks klaar");
+  executeEx("p");
+  executeEx("0,0,-1;0,0,0;0,0,0");
+  executeEx("0,0,1;0,0,0;0,0,0");
 }
 
 void loop(){
-  
+
+    // // disconnecting
+    // if (!deviceConnected && oldDeviceConnected) {
+    //     Serial.println("Device disconnected.");
+    //     delay(500); // give the bluetooth stack the chance to get things ready
+    //     pServer->startAdvertising(); // restart advertising
+    //     Serial.println("Start advertising");
+    //     oldDeviceConnected = deviceConnected;
+    // }
+    // // connecting
+    // if (deviceConnected && !oldDeviceConnected) {
+    //     // do stuff here on connecting
+    //     oldDeviceConnected = deviceConnected;
+    //     Serial.println("Device Connected");
+    // }
 }

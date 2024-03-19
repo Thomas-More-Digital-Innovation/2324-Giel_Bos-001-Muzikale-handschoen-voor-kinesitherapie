@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningenreeks beheren</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageExSQ.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a href="index.html" class="active"><span>Oefeningen</span></a>
+            <a href="manageRWLED.html"><span>Beloningen</span></a>
+            <a href="managePatients.html">Patiënten</a>
+        </div>
+        <div>
+            <a href="index.html"><span>Oefeningenreeks starten</span></a>
+            <a href="manageEx.html"><span>Oefeningen beheren</span></a>
+            <a href="manageExSQ.html" class="active"><span>Oefeningenreeks beheren</span></a>
+        </div>
+    </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>Oefeningenreeks toevoegen</span>
+    </div>
+
+    <div id="exSQ">
+        
+        <div th:each="sequence : ${sequences}">
+            <div class="images">
+                <div th:each="list : ${sequenceLists}" th:if="${list.exSQID == sequence.exSQID}">
+                    <div th:with="ex=${@exerciseService.getExerciseById(list.exID)}">
+                        <img th:src="${ex.picture}" th:alt="${ex.name}">
+                    </div>
+                </div>
+            </div>
+            <p th:text="${sequence.name}"></p>
+            <p th:text="${sequence.description}"></p>
+            <div class="icons">
+                <a th:href="@{/editExSQ/{id}(id=${sequence.exSQID})}"><i class="fa-solid fa-pen"></i> Naam en beschrijving</a>
+                <a th:href="@{/editExToSQ/{id}(id=${sequence.exSQID})}"><i class="fa-solid fa-pen"></i> Oefeningen</a>
+                <a th:href="@{/deleteExSQ/{id}(id=${sequence.exSQID})}"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup" style="display: none;">
+
+        <form method="post" th:action="@{/addExSQ}" enctype="multipart/form-data">
+            <label for="name">Naam</label>
+            <input type="text" name="name" id="name">
+            <label for="description">Beschrijving</label>
+            <input type="text" name="description" id="description"> 
+            
+            <div class="next">
+                <input type="submit" value="Bevestigen">
+                <div onclick="hidePopUp()">
+                    Annuleren
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "inline-block";
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "none";
+        }
+    </script>
+</body>
+</html>
