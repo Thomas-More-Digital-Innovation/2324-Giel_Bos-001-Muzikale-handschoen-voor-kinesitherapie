@@ -1,9 +1,12 @@
 package fact.it.mvc.manageExSQ;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import fact.it.mvc.UserExerciseSequence.UserExcerciseSequence;
 
 @Service
 public class ExerciseSequenceService {
@@ -40,5 +43,13 @@ public class ExerciseSequenceService {
 
     public void deleteExerciseSequence(int id) {
         exerciseSequenceRepository.deleteById(id);
+    }
+
+    public List<ExerciseSequence> getExerciseSequencesByUser(List<UserExcerciseSequence> userSequences){
+        List<ExerciseSequence> exerciseSequences = new ArrayList<>();
+        for(int i = 0; i < userSequences.size(); i++){
+            exerciseSequences.add(exerciseSequenceRepository.getById(userSequences.get(i).getExQSID()));
+        }
+        return exerciseSequences;
     }
 }

@@ -20,4 +20,8 @@ public class UserExcerciseSequence {
     @Id
     @Column(name = "exSQID")
     private int exSQID;
+
+    public int getExQSID(){
+        return exSQID;
+    }
 }

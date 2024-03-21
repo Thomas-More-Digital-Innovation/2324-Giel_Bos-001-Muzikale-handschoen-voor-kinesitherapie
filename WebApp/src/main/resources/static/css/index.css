@@ -1,37 +1,4 @@
-.exSQ{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-right: 5px;
-}
-
-.exSQ div a i{
-    font-size: 100px;
-    color: #000;
-    margin-right: 20px;
-    margin-left: 5px;
-}
-
-.exSQ div{
-    width: 75%;
-    padding-bottom: 10px;
-    border-radius: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.exSQ div div{
-    border: 2px solid #000;
-    flex-wrap: wrap;
-}
-
-.exSQ div div img{
-    height: 200px;
-    margin: 10px;
-}
-
-.selectdiv{
+form{
     display: flex;
     justify-content: center; /* Align items horizontally in the center */
     align-items: center; /* Align items vertically in the center */
@@ -40,4 +7,45 @@
 select{
     width: 150px;
     text-align: center;
+}
+#exSQ{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+}
+
+#exSQ > div{
+    width: 75%;
+    padding-bottom: 10px;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#exSQ > div > .images{
+    width: 75%;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+
+    border: 2px solid #000;
+    flex-wrap: wrap;
+}
+
+#exSQ > div >  .images > div > div > img{
+    height: 200px;
+}
+#exSQ > div > .images > div > div{
+    margin: 10px;
+}
+#exSQ div a i{
+    font-size: 100px;
+    color: #000;
+    margin-right: 20px;
+    margin-left: 5px;
 }
