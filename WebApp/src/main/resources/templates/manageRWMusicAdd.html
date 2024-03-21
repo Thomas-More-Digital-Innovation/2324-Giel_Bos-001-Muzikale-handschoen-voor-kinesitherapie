@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muziekjes</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageRWMusic.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a href="index.html"><span>Oefeningen</span></a>
+            <a href="manageRWLED.html" class="active"><span>Beloningen</span></a>
+            <a href="managePatients.html">Patiënten</a>
+        </div>
+        <div>
+            <a href="manageRWLED.html"><span>LED Ring</span></a>
+            <a href="manageRWMusic.html" class="active"><span>Muziekjes</span></a>
+        </div>
+    </nav>
+
+    <div id="popup">
+        <div class="customForm">
+            <ul id="musicNotes">
+                <li th:each="note: ${notes}" th:text="${note.note}"></li>
+            </ul>
+
+            <form method="post" th:action="@{/addNoteToList/{id}(id=${rewardMusic.rwMID})}" enctype="multipart/form-data">
+                <select name="note" id="note">
+                    <option th:each="noteList: ${notes}" th:text="${noteList.note}" th:value="${noteList.noteID}"></option>
+                </select>
+
+                <div class="next">
+                    <input type="submit" value="Voeg toe">
+                    <a th:href="@{/manageMusic}">Annuleren</a>
+                </div>
+            </form>
+            <ul id="newMusic">
+                <li th:each="rewardMusicList : ${rewardMusicLists}">
+                    <div th:with="matchingNote=${@noteService.getNoteById(rewardMusicList.noteID)}">
+                        <span th:text="${matchingNote.note}"></span>
+                    </div>
+                    <a th:href="@{/deleteMusicList/{id}(id=${rewardMusicList.rwMListID})}"><i class="fa-solid fa-trash"></i></a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+</html>

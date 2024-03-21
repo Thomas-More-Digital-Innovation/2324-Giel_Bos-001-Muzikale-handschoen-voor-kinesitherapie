@@ -3,7 +3,6 @@ package fact.it.mvc.RewardMusic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RewardMusicService {
@@ -18,8 +17,8 @@ public class RewardMusicService {
         return rewardMusicRepository.findAll();
     }
 
-    public Optional<RewardMusic> getRewardMusicById(int id) {
-        return rewardMusicRepository.findById(id);
+    public RewardMusic getRewardMusicById(int id) {
+        return rewardMusicRepository.findById(id).orElse(null);
     }
 
     public RewardMusic saveRewardMusic(RewardMusic rewardMusic) {

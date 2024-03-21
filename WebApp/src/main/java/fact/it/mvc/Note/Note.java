@@ -18,7 +18,7 @@ public class Note {
     private int noteID;
 
     @Column(name = "note")
-    private Character note;
+    private String note;
 
     @Column(name = "hzValue")
     private int hzValue;

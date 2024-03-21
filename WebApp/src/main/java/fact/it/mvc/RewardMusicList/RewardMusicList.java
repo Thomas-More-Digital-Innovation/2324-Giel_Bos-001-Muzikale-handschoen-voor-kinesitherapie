@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "ExerciseSequenceList")
+@Table(name = "RewardMusicList")
 public class RewardMusicList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +27,8 @@ public class RewardMusicList {
 
     @Column(name = "place")
     private int place;
+
+    public int getRwMID(){
+        return rwMID;
+    }
 }

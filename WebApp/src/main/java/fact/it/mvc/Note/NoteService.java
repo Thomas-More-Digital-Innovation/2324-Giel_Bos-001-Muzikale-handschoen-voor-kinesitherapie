@@ -3,7 +3,6 @@ package fact.it.mvc.Note;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NoteService {
@@ -18,8 +17,8 @@ public class NoteService {
         return noteRepository.findAll();
     }
 
-    public Optional<Note> getNoteById(int id) {
-        return noteRepository.findById(id);
+    public Note getNoteById(int id) {
+        return noteRepository.findById(id).orElse(null);
     }
 
     public Note saveNote(Note note) {

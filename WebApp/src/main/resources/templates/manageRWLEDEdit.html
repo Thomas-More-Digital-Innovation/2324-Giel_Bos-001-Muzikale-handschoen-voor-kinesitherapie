@@ -23,48 +23,19 @@
             <a href="manageRWMusic.html"><span>Muziekjes</span></a>
         </div>
     </nav>
-    <div id="addEX" onclick="displayPopUp()">
-        <span>LED beloning toevoegen</span>
-        
-    </div>
-    <div id="popup" style="display: none;">
-        <form method="post" th:action="@{/addLED}" enctype="multipart/form-data">
+    <div id="popup">
+        <form method="post" th:action="@{/updateLED/{id}(id=${LEDRing.rwLEDRingID})}" enctype="multipart/form-data">
             <div id="customsvg">
 
             </div>
             <div class="next">
                 <input type="submit" value="Bevestigen">
-                <div id="cancel" onclick="hidePopUp()">
-                    Annuleren
-                </div>  
+                <a th:href="@{/manageLED}">Annuleren</a>
             </div>
         </form>
     </div>
-    <div id="LEDRings">
-        <div th:each=" rewardLEDRing: ${rewardLEDRings}">
-            <svg width="210" height="210">
-                <circle cx="105" cy="105" r="85" stroke="black" stroke-width="30" fill="none"/>
-                <circle cx="187" cy="126" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode0}" data-circleid="0"/>
-                <circle cx="165" cy="165" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode1}" data-circleid="1"/>
-                <circle cx="126" cy="187" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode2}" data-circleid="2"/>
-                <circle cx="83" cy="187" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode3}" data-circleid="3"/>
-                <circle cx="44" cy="165" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode4}" data-circleid="4"/>
-                <circle cx="22" cy="126" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode5}" data-circleid="5"/>
-                <circle cx="22" cy="83" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode6}" data-circleid="6"/>
-                <circle cx="44" cy="44" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode7}" data-circleid="7"/>
-                <circle cx="83" cy="22" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode8}" data-circleid="8"/>
-                <circle cx="126" cy="22" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode9}" data-circleid="9"/>
-                <circle cx="165" cy="44" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode10}" data-circleid="10"/>
-                <circle cx="187" cy="83" r="12" stroke="white" stroke-width="2" th:fill="${rewardLEDRing.hexCode11}" data-circleid="11"/>
-            </svg>
-            <div class="icons">
-                <a th:href="@{/editLED/{id}(id=${rewardLEDRing.rwLEDRingID})}"><i class="fa-solid fa-pen"></i></a>
-                <a th:href="@{/deleteLED/{id}(id=${rewardLEDRing.rwLEDRingID})}"><i class="fa-solid fa-trash"></i></a>
-            </div>
-        </div>
-    </div>
 
-    <script>
+    <script th:inline="javascript">
         function displayPopUp(){
             const div = document.getElementById("popup");
             const customsvg = document.getElementById("customsvg");
@@ -83,6 +54,10 @@
             
             backcirclediv.appendChild(backsvg);
             customsvg.appendChild(backcirclediv);
+
+            /*<![CDATA[*/
+            var hexCodes = /*[[${hexCodes}]]*/ [];
+            /*]]>*/
             
             for(let i=0; i<12; i++){
                 const circleContainer = document.createElement("div");
@@ -95,13 +70,15 @@
                 const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 const cx = Math.floor(105+ Math.cos((15 + (i*30)) * Math.PI / 180)*85);
                 const cy = Math.floor(105+ Math.sin((15 + (i*30)) * Math.PI / 180)*85);
-                
+
+                console.log(i + " " + hexCodes[i]);
+
                 const cxString = cx.toString();
                 const cyString = cy.toString();
                 circle.setAttribute("cx", cxString);
                 circle.setAttribute("cy", cyString);
                 circle.setAttribute("r", "12");
-                circle.setAttribute("fill", "blue");
+                circle.setAttribute("fill", hexCodes[i]);
                 circle.setAttribute("stroke", "white");
                 circle.setAttribute("stroke-width", "2");
                 circle.setAttribute("data-circleid", i.toString());
@@ -119,7 +96,7 @@
                 colorInput.setAttribute("class", "colorpicker");
                 colorInput.setAttribute("style", stylestring);
                 colorInput.setAttribute("data-inputid", i.toString());
-                colorInput.setAttribute("value", "#0000FF");
+                colorInput.setAttribute("value", hexCodes[i]);
                 colorInput.addEventListener("input", function(event){
                     const query = '[data-circleid="' + colorInput.getAttribute("data-inputid") + '"]';
                     const circle = document.querySelector(query);
@@ -131,15 +108,11 @@
 
                 customsvg.appendChild(circleContainer)
             }
-
-            div.style.display = "inline-block";
         }
-        function hidePopUp(){
-            const div = document.getElementById("popup");
-            const customsvg = document.getElementById("customsvg");
-            customsvg.innerHTML = "";
-            div.style.display = "none";
-        }
+        document.addEventListener("DOMContentLoaded", function() {
+            // Your function code here
+            displayPopUp();
+        });
 
     </script>
 </body>

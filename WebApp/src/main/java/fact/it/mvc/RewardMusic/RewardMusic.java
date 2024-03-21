@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "note")
+@Table(name = "RewardMusic")
 public class RewardMusic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

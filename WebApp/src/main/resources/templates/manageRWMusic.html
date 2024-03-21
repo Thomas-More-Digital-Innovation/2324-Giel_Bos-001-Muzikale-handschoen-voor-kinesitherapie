@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muziekjes</title>
-    <link rel="stylesheet" href="../static/css/basicStyling.css">
-    <link rel="stylesheet" href="../static/css/manageRWMusic.css">
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageRWMusic.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 </head>
 <body>
@@ -24,126 +24,42 @@
         </div>
     </nav>
 
-    <div id="addEX" onclick="displayPopUp()">
-        <span>LED beloning toevoegen</span>
+    <a th:href="@{/addMusicList}" id="addEX">Muziek beloning toevoegen</a>
+
+    <div id="addNoteButton" onclick="displayAddNote()">
+        <span>Noot toevoegen</span>
     </div>
 
     <div id="musics">
-        <div>
+        <div th:each="rewardMusic : ${rewardMusics}">
             <ul>
-                <li>D</li>
-                <li>F</li>
-                <li>E</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
-                <li>A</li>
+                <li th:each="rewardMusicList : ${rewardMusicLists}" th:if="${rewardMusic.rwMID == rewardMusicList.rwMID}">
+                    <div th:with="matchingNote=${@noteService.getNoteById(rewardMusicList.noteID)}">
+                        <span th:text="${matchingNote.note}"></span>
+                    </div>
+                </li>
             </ul>
             <div class="icons">
-                <i class="fa-solid fa-pen"></i>
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </div>
-        <div>
-            <ul>
-                <li>D</li>
-                <li>F</li>
-                <li>E</li>
-                <li>A</li>
-            </ul>
-            <div class="icons">
-                <i class="fa-solid fa-pen"></i>
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </div>
-        <div>
-            <ul>
-                <li>D</li>
-                <li>F</li>
-                <li>E</li>
-                <li>A</li>
-            </ul>
-            <div class="icons">
-                <i class="fa-solid fa-pen"></i>
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </div>
-        <div>
-            <ul>
-                <li>D</li>
-                <li>F</li>
-                <li>E</li>
-                <li>A</li>
-            </ul>
-            <div class="icons">
-                <i class="fa-solid fa-pen"></i>
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </div>
-        <div>
-            <ul>
-                <li>D</li>
-                <li>F</li>
-                <li>E</li>
-                <li>A</li>
-            </ul>
-            <div class="icons">
-                <i class="fa-solid fa-pen"></i>
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </div>
-
-        <div>
-            <ul>
-                <li>A</li>
-                <li>B</li>
-                <li>C</li>
-                <li>D</li>
-            </ul>
-            <div class="icons">
-                <i class="fa-solid fa-pen"></i>
-                <i class="fa-solid fa-trash"></i>
+                <a th:href="@{/editNoteToList/{id}(id=${rewardMusic.rwMID})}"><i class="fa-solid fa-pen"></i></a>
+                <a th:href="@{/deleteMusic/{id}(id=${rewardMusic.rwMID})}"><i class="fa-solid fa-trash"></i></a>
             </div>
         </div>
 
     </div>
 
-    <div id="popup" style="display: none;">
-        <div class="customForm">
-            <ul id="musicNotes">
-                <li onclick="addNote(this)">A</li>
-                <li onclick="addNote(this)">B</li>
-                <li onclick="addNote(this)">C</li>
-                <li onclick="addNote(this)">D</li>
-                <li onclick="addNote(this)">E</li>
-                <li onclick="addNote(this)">F</li>
-            </ul>
-
-            <ul id="newMusic">
-
-            </ul>
+    <div id="addNote" style="display: none;">
+        <form method="post" th:action="@{/addNote}" enctype="multipart/form-data">
+            <label for="note">Noot</label>
+            <input type="text" name="note" id="note">
+            <label for="hzValue">Frequentie</label>
+            <input type="number" name="hzValue" id="hzValue">
             <div class="next">
-                <div id="approve" onclick="hidePopUp()">
-                    Bevestigen
-                </div>
-                <div id="cancel" onclick="hidePopUp()">
+                <input type="submit" value="Bevestigen">
+                <div id="cancel" onclick="hideAddNote()">
                     Annuleren
                 </div>  
             </div>
-
-        </div>
-
+        </form>
     </div>
 
     <script>
@@ -153,15 +69,15 @@
         }
         function hidePopUp(){
             const div = document.getElementById("popup");
-            const list = document.getElementById("newMusic");
-            list.innerHTML = "";
             div.style.display = "none";
         }
-        function addNote(note){
-            const list = document.getElementById("newMusic");
-            const li = document.createElement("li");
-            li.innerHTML = note.innerHTML;
-            list.appendChild(li);
+        function displayAddNote(){
+            const div = document.getElementById("addNote");
+            div.style.display = "inline-block";
+        }
+        function hideAddNote(){
+            const div = document.getElementById("addNote");
+            div.style.display = "none";           
         }
     </script>
 </body>
