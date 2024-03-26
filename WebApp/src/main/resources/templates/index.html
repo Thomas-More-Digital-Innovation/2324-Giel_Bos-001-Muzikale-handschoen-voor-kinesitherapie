@@ -14,14 +14,14 @@
     </header>
     <nav>
         <div>
-            <a href="index.html" class="active"><span>Oefeningen</span></a>
-            <a href="manageRWLED.html"><span>Beloningen</span></a>
-            <a href="managePatients.html">Patiënten</a>
+            <a th:href="@{/}" class="active"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
         </div>
         <div>
-            <a href="index.html" class="active"><span>Oefeningenreeks starten</span></a>
-            <a href="manageEx.html"><span>Oefeningen beheren</span></a>
-            <a href="manageExSQ.html"><span>Oefeningenreeks beheren</span></a>
+            <a th:href="@{/}" class="active"><span>Oefeningenreeks starten</span></a>
+            <a th:href="@{/manageEx}"><span>Oefeningen beheren</span></a>
+            <a th:href="@{/manageExSQ}"><span>Oefeningenreeks beheren</span></a>
         </div>
     </nav>
     <form method="post" th:action="@{/filterPatient}" enctype="multipart/form-data">
@@ -34,7 +34,7 @@
 
     <div id="exSQ">
         <div th:each="sequence : ${sequences}">
-            <a href=""><i class="fa-solid fa-play"></i></a>
+            <a th:href="@{/exec/{id}(id=${sequence.exSQID})}"><i class="fa-solid fa-play"></i></a>
                 <div class="images">
                     <div th:each="list : ${sequenceLists}" th:if="${list.exSQID == sequence.exSQID}">
                         <div th:with="ex=${@exerciseService.getExerciseById(list.exID)}">

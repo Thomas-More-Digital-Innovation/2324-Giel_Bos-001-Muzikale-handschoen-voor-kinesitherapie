@@ -6,6 +6,7 @@
     <title>Oefeningenreeks starten</title>
     <link rel="stylesheet" href="/css/basicStyling.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/manageExSQ.css">
     <link rel="stylesheet" href="/css/managePatients.css">
 </head>
 <body>
@@ -14,15 +15,12 @@
     </header>
     <nav>
         <div>
-            <a href="index.html" ><span>Oefeningen</span></a>
-            <a href="manageRWLED.html"><span>Beloningen</span></a>
-            <a href="managePatients.html"class="active">Patiënten</a>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}" class="active">Patiënten</a>
         </div>
-    </nav>
 
-    <div id="addPatient" onclick="displayPopUp()">
-        <span>Patiënt toevoegen</span>
-    </div>
+    </nav>
 
     <div id="popup">
         <form method="post" th:action="@{/updatePatient/{id}(id=${patient.userID})}" enctype="multipart/form-data">
@@ -31,8 +29,8 @@
             <label for="lastName">Achternaam</label>
             <input type="text" name="lastName" id="lastName" th:value="${patient.lastName}">
             <div class="next">
-                <input type="submit" value="Bevestigen">
-                <a th:href="@{/managePatients}">Annuleren</a>
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/managePatients}" id="cancel">Annuleren</a>
             </div>
         </form>
     </div>

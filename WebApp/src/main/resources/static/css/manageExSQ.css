@@ -49,7 +49,13 @@
     flex-wrap: wrap;
 }
 #exSQ > div > .icons > a,
-#selectedSequenceses > div > .icons > a{
+#selectedSequenceses > div > .icons > a {
+    color: #000;
+    font-size: 20px;
+    text-decoration: none;
+}
+#exSQ > div > .icons > a > i,
+#selectedSequenceses > div > .icons > a > i{
     font-size: 40px;
     color: #000;
 }
@@ -73,7 +79,7 @@
     border-radius: 30px;
 }
 
-#popup .customform{
+#popup form{
     background-color: transparent;
     min-height: 500px;
     display: flex;
@@ -81,7 +87,7 @@
     align-items: center;
     flex-direction: column;
 }
-#popup .customform *{
+#popup form *{
     margin: 5px;
     font-size: 15px;
 }
@@ -99,10 +105,13 @@
 }
 #cancel{
     background-color: red;
-
+    text-decoration: none;
+    color: #000;
+    font-size: 15px;
 }
 #approve{
     background-color: green;
+    font-size: 15px;
 }
 #newSQ{
     border: 2px solid #000;

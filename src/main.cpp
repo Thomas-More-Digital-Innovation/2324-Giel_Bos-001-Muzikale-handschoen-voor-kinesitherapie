@@ -21,32 +21,14 @@
 BLEServer* pServer = NULL;
 BLECharacteristic* pSensorCharacteristic = NULL;
 BLECharacteristic* pLedCharacteristic = NULL;
+BLECharacteristic* pNotificationCharacteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
 
-#define SERVICE_UUID        "19b10000-e8f2-537e-4f6c-d104768a1214"
-#define SENSOR_CHARACTERISTIC_UUID "19b10001-e8f2-537e-4f6c-d104768a1214"
+#define SERVICE_UUID "19b10000-e8f2-537e-4f6c-d104768a1214"
 #define LED_CHARACTERISTIC_UUID "19b10002-e8f2-537e-4f6c-d104768a1214"
-
-class MyServerCallbacks: public BLEServerCallbacks {
-    void onConnect(BLEServer* pServer) {
-      deviceConnected = true;
-    };
-
-    void onDisconnect(BLEServer* pServer) {
-      deviceConnected = false;
-    }
-};
-class MyCharacteristicCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic* onCharacteristic) {
-        std::string value = onCharacteristic->getValue();
-        Serial.println(value.c_str());
-        if (value.length() > 0) {
-
-        }
-    }
-};
+#define NOTIFICATION_CHARACTERISTIC_UUID "19b10001-e8f2-537e-4f6c-d104768a1214"
 
 using namespace std;
 
@@ -107,6 +89,14 @@ void playsound(int note, int duration){
   tone(PIN_SND, note, duration);
 }
 
+void notifyExerciseDone() {
+  if (deviceConnected) {
+    pNotificationCharacteristic->setValue("ExerciseDone");
+    pNotificationCharacteristic->notify(); // Notify connected devices
+    Serial.println("Exercise Done");
+  }
+}
+
 void executeEx(String oefening){
   Serial.println(oefening);
 
@@ -149,13 +139,13 @@ void executeEx(String oefening){
         Serial.println();
         delay(1000);
 
-        // for(int i = 0; i < oefeningen.size(); i++){
-        //   if(boolArray[i] == true){
-        //     if(oefeningen[i] == co2D[i]){
-        //       oefeningKlaar = true;
-        //     }
-        //   }
-        // }
+        for(int i = 0; i < oefeningen.size(); i++){
+          if(boolArray[i] == true){
+            if(oefeningen[i] == co2D[i]){
+              oefeningKlaar = true;
+            }
+          }
+        }
       }
     }
     else{
@@ -167,16 +157,35 @@ void executeEx(String oefening){
         }
       }
     }
-  showFigure(smiley, 50);
+  //showFigure(smiley, 50);
   // playsound(NOTE_C4, 250);
   // playsound(NOTE_E4, 250);
   // playsound(NOTE_G4, 250);
   // playsound(NOTE_C5, 250);
   delay(1000);
-  off();
+  //off();
     Serial.println("oefening klaar");
 
 }
+
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+    };
+
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+    }
+};
+class MyCharacteristicCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic* onCharacteristic) {
+        std::string value = onCharacteristic->getValue();
+        Serial.println(value.c_str());
+        if (value.length() > 0) {
+          executeEx(value.c_str());
+        }
+    }
+};
 
 void setup() {
   Serial.begin(115200);      // open serial monitor
@@ -185,7 +194,6 @@ void setup() {
   digitalWrite(14, HIGH);    // pin 14 output high (used for changing I2C address gyro hand)
   Wire.begin(SDA_1, SCL_1);  // I2C bus 1
   Wire1.begin(SDA_2, SCL_2); // I2C bus 2
-
   pinMode(PIN_SND, OUTPUT);
   for(int i; i < smiley.size(); i++){
     if((i != 5) && (i != 7) && (i != 9)){
@@ -204,77 +212,67 @@ void setup() {
   thumb.gyroSetup(0x68, Wire);
   fingers.gyroSetup(0x68, Wire1);
 
-  //   // Create the BLE Device
-  // BLEDevice::init("ESP32");
+    // Create the BLE Device
+  BLEDevice::init("ESP32");
 
-  // // Create the BLE Server
-  // pServer = BLEDevice::createServer();
-  // pServer->setCallbacks(new MyServerCallbacks());
+  // Create the BLE Server
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
 
-  // // Create the BLE Service
-  // BLEService *pService = pServer->createService(SERVICE_UUID);
+  // Create the BLE Service
+  BLEService *pService = pServer->createService(SERVICE_UUID);
 
-  // // Create a BLE Characteristic
-  // pSensorCharacteristic = pService->createCharacteristic(
-  //                     SENSOR_CHARACTERISTIC_UUID,
-  //                     BLECharacteristic::PROPERTY_READ   |
-  //                     BLECharacteristic::PROPERTY_WRITE  |
-  //                     BLECharacteristic::PROPERTY_NOTIFY |
-  //                     BLECharacteristic::PROPERTY_INDICATE
-  //                   );
+  // Create the ON button Characteristic
+  pLedCharacteristic = pService->createCharacteristic(
+                      LED_CHARACTERISTIC_UUID,
+                      BLECharacteristic::PROPERTY_WRITE
+                    );
+  pNotificationCharacteristic = pService->createCharacteristic(
+                      NOTIFICATION_CHARACTERISTIC_UUID,
+                      BLECharacteristic::PROPERTY_NOTIFY
+                    );
 
-  // // Create the ON button Characteristic
-  // pLedCharacteristic = pService->createCharacteristic(
-  //                     LED_CHARACTERISTIC_UUID,
-  //                     BLECharacteristic::PROPERTY_WRITE
-  //                   );
+  // Register the callback for the ON button characteristic
+  pLedCharacteristic->setCallbacks(new MyCharacteristicCallbacks());
 
-  // // Register the callback for the ON button characteristic
-  // pLedCharacteristic->setCallbacks(new MyCharacteristicCallbacks());
+  // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
+  // Create a BLE Descriptor
+  pLedCharacteristic->addDescriptor(new BLE2902());
+  pNotificationCharacteristic->addDescriptor(new BLE2902());
 
-  // // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
-  // // Create a BLE Descriptor
-  // pSensorCharacteristic->addDescriptor(new BLE2902());
-  // pLedCharacteristic->addDescriptor(new BLE2902());
+  // Start the service
+  pService->start();
 
-  // // Start the service
-  // pService->start();
+  // Start advertising
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->setScanResponse(false);
+  pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
+  BLEDevice::startAdvertising();
+  Serial.println("Waiting a client connection to notify...");
 
-  // // Start advertising
-  // BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-  // pAdvertising->addServiceUUID(SERVICE_UUID);
-  // pAdvertising->setScanResponse(false);
-  // pAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
-  // BLEDevice::startAdvertising();
-  // Serial.println("Waiting a client connection to notify...");
-
-  showFigure(smiley, 50);
+  //showFigure(smiley, 50);
   //playsound(NOTE_C4, 250);
   //playsound(NOTE_E4, 250);
   //playsound(NOTE_G4, 250);
   //playsound(NOTE_C5, 250);
   delay(1000);
-  off();
-
-  executeEx("p");
-  executeEx("0,0,-1;0,0,0;0,0,0");
-  executeEx("0,0,1;0,0,0;0,0,0");
+  //off();
 }
 
 void loop(){
-
-    // // disconnecting
-    // if (!deviceConnected && oldDeviceConnected) {
-    //     Serial.println("Device disconnected.");
-    //     delay(500); // give the bluetooth stack the chance to get things ready
-    //     pServer->startAdvertising(); // restart advertising
-    //     Serial.println("Start advertising");
-    //     oldDeviceConnected = deviceConnected;
-    // }
-    // // connecting
-    // if (deviceConnected && !oldDeviceConnected) {
-    //     // do stuff here on connecting
-    //     oldDeviceConnected = deviceConnected;
-    //     Serial.println("Device Connected");
-    // }
+    // disconnecting
+    if (!deviceConnected && oldDeviceConnected) {
+        Serial.println("Device disconnected.");
+        delay(500); // give the bluetooth stack the chance to get things ready
+        pServer->startAdvertising(); // restart advertising
+        Serial.println("Start advertising");
+        oldDeviceConnected = deviceConnected;
+    }
+    // connecting
+    if (deviceConnected && !oldDeviceConnected) {
+        // do stuff here on connecting
+        oldDeviceConnected = deviceConnected;
+        Serial.println("Device Connected");
+    }
 }

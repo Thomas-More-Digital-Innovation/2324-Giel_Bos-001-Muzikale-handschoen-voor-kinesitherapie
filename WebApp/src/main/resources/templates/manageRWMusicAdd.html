@@ -14,13 +14,13 @@
     </header>
     <nav>
         <div>
-            <a href="index.html"><span>Oefeningen</span></a>
-            <a href="manageRWLED.html" class="active"><span>Beloningen</span></a>
-            <a href="managePatients.html">Patiënten</a>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}" class="active"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
         </div>
         <div>
-            <a href="manageRWLED.html"><span>LED Ring</span></a>
-            <a href="manageRWMusic.html" class="active"><span>Muziekjes</span></a>
+            <a th:href="@{/manageLED}"><span>LED Ring</span></a>
+            <a th:href="@{/manageMusic}" class="active"><span>Muziekjes</span></a>
         </div>
     </nav>
 
@@ -36,8 +36,8 @@
                 </select>
 
                 <div class="next">
-                    <input type="submit" value="Voeg toe">
-                    <a th:href="@{/manageMusic}">Annuleren</a>
+                    <input type="submit" value="Voeg toe" id="approve">
+                    <a th:href="@{/manageMusic}" id="cancel">Annuleren</a>
                 </div>
             </form>
             <ul id="newMusic">

@@ -14,21 +14,18 @@
     </header>
     <nav>
         <div>
-            <a href="index.html"><span>Oefeningen</span></a>
-            <a href="manageRWLED.html" class="active"><span>Beloningen</span></a>
-            <a href="managePatients.html">Patiënten</a>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}" class="active"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
         </div>
         <div>
-            <a href="manageRWLED.html"><span>LED Ring</span></a>
-            <a href="manageRWMusic.html" class="active"><span>Muziekjes</span></a>
+            <a th:href="@{/manageLED}"><span>LED Ring</span></a>
+            <a th:href="@{/manageMusic}" class="active"><span>Muziekjes</span></a>
         </div>
     </nav>
 
     <a th:href="@{/addMusicList}" id="addEX">Muziek beloning toevoegen</a>
 
-    <div id="addNoteButton" onclick="displayAddNote()">
-        <span>Noot toevoegen</span>
-    </div>
 
     <div id="musics">
         <div th:each="rewardMusic : ${rewardMusics}">
@@ -47,38 +44,5 @@
 
     </div>
 
-    <div id="addNote" style="display: none;">
-        <form method="post" th:action="@{/addNote}" enctype="multipart/form-data">
-            <label for="note">Noot</label>
-            <input type="text" name="note" id="note">
-            <label for="hzValue">Frequentie</label>
-            <input type="number" name="hzValue" id="hzValue">
-            <div class="next">
-                <input type="submit" value="Bevestigen">
-                <div id="cancel" onclick="hideAddNote()">
-                    Annuleren
-                </div>  
-            </div>
-        </form>
-    </div>
-
-    <script>
-        function displayPopUp(){
-            const div = document.getElementById("popup");
-            div.style.display = "inline-block";
-        }
-        function hidePopUp(){
-            const div = document.getElementById("popup");
-            div.style.display = "none";
-        }
-        function displayAddNote(){
-            const div = document.getElementById("addNote");
-            div.style.display = "inline-block";
-        }
-        function hideAddNote(){
-            const div = document.getElementById("addNote");
-            div.style.display = "none";           
-        }
-    </script>
 </body>
 </html>

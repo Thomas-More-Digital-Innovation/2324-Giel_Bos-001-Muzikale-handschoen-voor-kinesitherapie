@@ -27,4 +27,8 @@ public class ExerciseSequenceList {
 
     @Column(name = "place")
     private int place;
+
+    public int getExID(){
+        return exID;
+    }
 }

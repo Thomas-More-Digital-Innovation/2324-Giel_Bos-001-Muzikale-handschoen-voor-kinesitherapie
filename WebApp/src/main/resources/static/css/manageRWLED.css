@@ -52,13 +52,13 @@
     z-index: 100;
 }
 
-.customForm{
+form{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.customForm *{
+form *{
     margin-bottom: 20px;
 }
 
@@ -72,11 +72,14 @@
     border-radius: 20px;
     padding: 10px;
     border: none;
+    font-size: 15px;
 }
 #cancel{
     background-color: red;
+    text-decoration: none;
+    color: black;
     margin: 10px;
-
+    font-size: 15px;
 }
 #approve{
     background-color: green;
@@ -99,8 +102,9 @@
     justify-content: center;
     align-items: center;
 }
-.icons i{
+.icons a{
     margin: 10px;
+    color: black;
 }
 
 @media (max-width: 900px){

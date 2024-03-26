@@ -14,13 +14,13 @@
     </header>
     <nav>
         <div>
-            <a href="index.html"><span>Oefeningen</span></a>
-            <a href="manageRWLED.html" class="active"><span>Beloningen</span></a>
-            <a href="managePatients.html">Patiënten</a>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}" class="active"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
         </div>
         <div>
-            <a href="manageRWLED.html" class="active"><span>LED Ring</span></a>
-            <a href="manageRWMusic.html"><span>Muziekjes</span></a>
+            <a th:href="@{/manageLED}" class="active"><span>LED Ring</span></a>
+            <a th:href="@{/manageMusic}"><span>Muziekjes</span></a>
         </div>
     </nav>
     <div id="popup">
@@ -29,8 +29,8 @@
 
             </div>
             <div class="next">
-                <input type="submit" value="Bevestigen">
-                <a th:href="@{/manageLED}">Annuleren</a>
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/manageLED}" id="cancel">Annuleren</a>
             </div>
         </form>
     </div>

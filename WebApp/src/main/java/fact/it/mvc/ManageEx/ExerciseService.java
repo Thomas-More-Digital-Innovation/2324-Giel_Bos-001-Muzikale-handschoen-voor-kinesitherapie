@@ -3,6 +3,9 @@ package fact.it.mvc.ManageEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fact.it.mvc.ExSQList.ExerciseSequenceList;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,5 +39,12 @@ public class ExerciseService {
 
     public void deleteExercise(int id) {
         exerciseRepository.deleteById(id);
+    }
+    public List<Exercise> getByList(List<ExerciseSequenceList> sequenceList){
+        List<Exercise> exercises =  new ArrayList<>();
+        for(int i = 0; i < sequenceList.size(); i++){
+            exercises.add(exerciseRepository.getById(sequenceList.get(i).getExID()));
+        }
+        return exercises;
     }
 }

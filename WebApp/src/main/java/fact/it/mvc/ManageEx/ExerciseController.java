@@ -63,8 +63,7 @@ public class ExerciseController {
         }
 
         String exerciseKind = request.getParameter("typeEX");
-
-        if(exerciseKind == "p"){
+        if(exerciseKind.equals("p")){
             exString = exerciseKind;
         }
         else{
@@ -97,10 +96,9 @@ public class ExerciseController {
             }
             exString = palm + ";" + thumb + ";" + fingers;
         }
-
         Exercise exercise = new Exercise();
         exercise.setName(name);
-        exercise.setPicture("img" + File.separator + fileName);
+        exercise.setPicture("/img" + File.separator + fileName);
         exercise.setDescription(description);
         exercise.setExString(exString);
 
@@ -192,7 +190,7 @@ public class ExerciseController {
 
         Exercise exercise = exerciseService.getExerciseById(id);
         exercise.setName(name);
-        exercise.setPicture("img" + File.separator + fileName);
+        exercise.setPicture("/img" + File.separator + fileName);
         exercise.setDescription(description);
         exercise.setExString(exString);
 

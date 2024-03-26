@@ -14,14 +14,14 @@
     </header>
     <nav>
         <div>
-            <a href="index.html" class="active"><span>Oefeningen</span></a>
-            <a href="manageRWLED.html"><span>Beloningen</span></a>
-            <a href="managePatients.html">Patiënten</a>
+            <a th:href="@{/}" class="active"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
         </div>
         <div>
-            <a href="index.html"><span>Oefeningenreeks starten</span></a>
-            <a href="manageEx.html" class="active"><span>Oefeningen beheren</span></a>
-            <a href="manageExSQ.html"><span>Oefeningenreeks beheren</span></a>
+            <a th:href="@{/}"><span>Oefeningenreeks starten</span></a>
+            <a th:href="@{/manageEx}" class="active"><span>Oefeningen beheren</span></a>
+            <a th:href="@{/manageExSQ}"><span>Oefeningenreeks beheren</span></a>
         </div>
     </nav>
 
@@ -86,8 +86,8 @@
             <input type="file" name="picture" id="picture">
 
             <div class="next">
-                <input type="submit" value="Bevestigen">
-                <a th:href="@{/manageEx}">Annuleren</a>
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/manageEx}" id="cancel">Annuleren</a>
             </div>
         </form>
     </div>

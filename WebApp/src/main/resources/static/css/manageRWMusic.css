@@ -11,9 +11,9 @@
     align-items: center;
     margin-left: auto;
     margin-right: auto;
-}
-#addEX span{
     text-align: center;
+    text-decoration: none;
+    color: #000;
 }
 #addEX:hover,
 #addEX:focus{
@@ -38,6 +38,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    width: 100%;
 }
 .customForm *{
     margin-bottom: 20px;
@@ -59,11 +60,14 @@
 #cancel{
     background-color: red;
     margin: 10px;
-
+    text-decoration: none;
+    color: #000;
+    font-size: 15px;
 }
 #approve{
     background-color: green;
     margin: 10px;
+    font-size: 15px;
 }
 li {
     display: inline-block;
@@ -72,8 +76,8 @@ li {
 }
 #newMusic{
     border: 2px solid #000;
-    width: 90%;
     min-height: 100px;
+    width: 90%;
     border-radius: 25px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -88,8 +92,12 @@ li {
     justify-content: center;
     align-items: center;
 }
-.icons i{
+.icons a{
     margin: 10px;
+    color: #000;
+}
+li > a{
+    color: #000;
 }
 
 #musics{
@@ -104,7 +112,11 @@ li {
     border: 2px solid #000;
     border-radius: 10px;
 }
-
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 @media (max-width: 900px){
     #popup{

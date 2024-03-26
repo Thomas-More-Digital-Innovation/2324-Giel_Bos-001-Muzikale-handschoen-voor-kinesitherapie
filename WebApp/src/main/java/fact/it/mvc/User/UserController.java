@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @GetMapping("/editPatientToSQ/{id}")
-    public String getMethodName(@PathVariable("id") int id, Model model) {
+    public String editPatientToSQ(@PathVariable("id") int id, Model model) {
         User patient = userService.getUserById(id);
         List<ExerciseSequence> sequences = exerciseSequenceService.getAllExerciseSequences();
         List<ExerciseSequenceList> sequenceLists = exerciseSequenceListService.getAllExerciseSequenceLists();

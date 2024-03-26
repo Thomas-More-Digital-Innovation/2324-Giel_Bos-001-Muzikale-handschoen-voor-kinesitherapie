@@ -8,11 +8,15 @@
     height: 200px;
     margin: 10px;
 }
+#ex div p{
+    text-align: center;
+}
 
-#ex div div i{
+#ex div div a{
     font-size: 25px;
     margin-left: 10px;
     margin-right: 10px;
+    color: black;
 }
 
 #ex div div{
@@ -78,12 +82,15 @@
     padding: 10px;
     border: none;
 }
-.next div{
+#cancel{
     background-color: red;
-
+    text-decoration: none;
+    color: #000;
+    font-size: 15px;
 }
-.next input{
+#approve{
     background-color: green;
+    font-size: 15px;
 }
 
 @media (max-width: 900px){
