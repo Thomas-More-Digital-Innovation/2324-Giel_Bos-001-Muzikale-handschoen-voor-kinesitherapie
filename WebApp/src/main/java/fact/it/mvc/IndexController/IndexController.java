@@ -21,6 +21,8 @@ import fact.it.mvc.UserExerciseSequence.UserExcerciseSequence;
 import fact.it.mvc.UserExerciseSequence.UserExcerciseSequenceService;
 import fact.it.mvc.manageExSQ.ExerciseSequence;
 import fact.it.mvc.manageExSQ.ExerciseSequenceService;
+import fact.it.mvc.RewardLEDRing.RewardLEDRingService;
+import fact.it.mvc.RewardLEDRing.RewardLEDRing;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -32,13 +34,15 @@ public class IndexController {
     private final ExerciseSequenceListService exerciseSequenceListService;
     private final UserService userService;
     private final UserExcerciseSequenceService userExcerciseSequenceService;
+    private final RewardLEDRingService rewardLEDRingService;
 
-    public IndexController(ExerciseSequenceService exerciseSequenceService, ExerciseService exerciseService, ExerciseSequenceListService exerciseSequenceListService, UserService userService, UserExcerciseSequenceService userExcerciseSequenceService) {
+    public IndexController(ExerciseSequenceService exerciseSequenceService, ExerciseService exerciseService, ExerciseSequenceListService exerciseSequenceListService, UserService userService, UserExcerciseSequenceService userExcerciseSequenceService, RewardLEDRingService rewardLEDRingService) {
         this.exerciseSequenceService = exerciseSequenceService;
         this.exerciseService = exerciseService;
         this.exerciseSequenceListService = exerciseSequenceListService;
         this.userService = userService;
         this.userExcerciseSequenceService = userExcerciseSequenceService;
+        this.rewardLEDRingService = rewardLEDRingService;
     }
 
     @GetMapping("/")
@@ -96,6 +100,8 @@ public class IndexController {
             description.add(exercises.get(i).getDescription());
             picture.add(exercises.get(i).getPicture());
         }
+
+        List<RewardLEDRing> rewardLEDRings = rewardLEDRingService.getAllRewardLEDRings();
         model.addAttribute("exStrings", exString);
         model.addAttribute("names", name);
         model.addAttribute("descriptions", description);

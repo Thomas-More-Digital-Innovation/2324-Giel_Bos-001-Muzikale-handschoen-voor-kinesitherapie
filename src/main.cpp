@@ -19,12 +19,17 @@
 #include <BLE2902.h>
 
 BLEServer* pServer = NULL;
-BLECharacteristic* pSensorCharacteristic = NULL;
 BLECharacteristic* pLedCharacteristic = NULL;
 BLECharacteristic* pNotificationCharacteristic = NULL;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint32_t value = 0;
+
+bool executeExBool = false;
+std::string incomingValue = "";
+
+std::vector<std::array<int, 3>> oefeningen =  toIntVector(incomingValue.c_str());
+std::array<bool, 3> boolArray;
 
 #define SERVICE_UUID "19b10000-e8f2-537e-4f6c-d104768a1214"
 #define LED_CHARACTERISTIC_UUID "19b10002-e8f2-537e-4f6c-d104768a1214"
@@ -75,13 +80,13 @@ void off(){
 }
 
 void showFigure(std::array<std::array<uint32_t, 3>,12> figure, int brightness){
-    ledring.setBrightness(brightness);
-    for(int i = 0; i < figure.size(); i++){
-        if (i >= 0 && i < 12) {
-            ledring.setPixelColor(i,figure[i][0],figure[i][1],figure[i][2]);
-        }
-    }
-    ledring.show();
+  ledring.setBrightness(brightness);
+  for(int i = 0; i < figure.size(); i++){
+      if (i >= 0 && i < 12) {
+          ledring.setPixelColor(i,figure[i][0],figure[i][1],figure[i][2]);
+      }
+  }
+  ledring.show();
 }
 
 void playsound(int note, int duration){
@@ -91,100 +96,78 @@ void playsound(int note, int duration){
 
 void notifyExerciseDone() {
   if (deviceConnected) {
-    pNotificationCharacteristic->setValue("ExerciseDone");
+    String message = "ExerciseDone";
+    pNotificationCharacteristic->setValue(message.c_str());
     pNotificationCharacteristic->notify(); // Notify connected devices
-    Serial.println("Exercise Done");
+    Serial.println("Notification Send");
+    delay(1000);
   }
 }
 
-void executeEx(String oefening){
-  Serial.println(oefening);
-
+void executeEx(){
   bool oefeningKlaar = false;
-    if(oefening != "p"){
+  if(incomingValue != "p"){
+    std::array<int, 3> coHand = hand.gyroData();
+    std::array<int, 3> coThumb = thumb.gyroData();
+    std::array<int, 3> coFingers = fingers.gyroData();
+    std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
 
-      std::vector<std::array<int, 3>> oefeningen =  toIntVector(oefening);
-
-      std::array<bool, 3> boolArray;
-      for(int i= 0; i< boolArray.size(); i++){
-        boolArray[i] = false;
-      }
-
-      for(int i = 0; i < oefeningen.size(); i++){
-        for(int j = 0; j < oefeningen[i].size(); j++){
-          if(oefeningen[i][j] != 0){
-            boolArray[i] = true;
-          }
-        }
-      }
-
-      for(int i= 0; i< boolArray.size(); i++){
-        Serial.println(boolArray[i]);
-      }
-
-      while (oefeningKlaar == false){
-        std::array<int, 3> coHand = hand.gyroData();
-        std::array<int, 3> coThumb = thumb.gyroData();
-        std::array<int, 3> coFingers = fingers.gyroData();
-
-        std::array<std::array<int, 3>, 3> co2D{coHand, coThumb, coFingers};
-
-        for (int i = 0; i < 3; i++) {
-          for (int j = 0; j < 3; j++) {
-            Serial.print(co2D[i][j]);
-            Serial.print(" ");
-          }
-          Serial.println();
-        }
-        Serial.println();
-        delay(1000);
-
-        for(int i = 0; i < oefeningen.size(); i++){
-          if(boolArray[i] == true){
-            if(oefeningen[i] == co2D[i]){
-              oefeningKlaar = true;
-            }
-          }
-        }
-      }
-    }
-    else{
-      while (oefeningKlaar == false){
-        uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
-        Serial.println(fsrReading);
-        if (fsrReading > 2500){
+    for(int i = 0; i < oefeningen.size(); i++){
+      if(boolArray[i] == true){
+        if(oefeningen[i] == co2D[i]){
           oefeningKlaar = true;
+          executeExBool = false;
+          notifyExerciseDone();
         }
       }
     }
-  //showFigure(smiley, 50);
-  // playsound(NOTE_C4, 250);
-  // playsound(NOTE_E4, 250);
-  // playsound(NOTE_G4, 250);
-  // playsound(NOTE_C5, 250);
-  delay(1000);
-  //off();
-    Serial.println("oefening klaar");
-
+  }
+  else{
+    uint16_t fsrReading = analogRead(FSR); // analog reading from FSR
+    Serial.println(fsrReading);
+    if (fsrReading > 2500){
+      oefeningKlaar = true;
+      executeExBool = false;
+      notifyExerciseDone();
+    }
+  }
 }
 
 class MyServerCallbacks: public BLEServerCallbacks {
-    void onConnect(BLEServer* pServer) {
-      deviceConnected = true;
-    };
+  void onConnect(BLEServer* pServer) {
+    deviceConnected = true;
+  };
 
-    void onDisconnect(BLEServer* pServer) {
-      deviceConnected = false;
-    }
+  void onDisconnect(BLEServer* pServer) {
+    deviceConnected = false;
+  }
 };
 class MyCharacteristicCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic* onCharacteristic) {
-        std::string value = onCharacteristic->getValue();
-        Serial.println(value.c_str());
-        if (value.length() > 0) {
-          executeEx(value.c_str());
+  void onWrite(BLECharacteristic* onCharacteristic) {
+    incomingValue = onCharacteristic->getValue();
+    Serial.println(incomingValue.c_str());
+    if (incomingValue.length() > 0) {
+      if(incomingValue != "p"){
+
+        oefeningen =  toIntVector(incomingValue.c_str());
+        for(int i= 0; i< boolArray.size(); i++){
+          boolArray[i] = false;
         }
+        for(int i = 0; i < oefeningen.size(); i++){
+          for(int j = 0; j < oefeningen[i].size(); j++){
+            if(oefeningen[i][j] != 0){
+              boolArray[i] = true;
+            }
+          }
+        }
+
+        for(int i= 0; i< boolArray.size(); i++){
+          Serial.println(boolArray[i]);
+        }
+      }
+      executeExBool = true;
     }
+  }
 };
 
 void setup() {
@@ -229,7 +212,10 @@ void setup() {
                     );
   pNotificationCharacteristic = pService->createCharacteristic(
                       NOTIFICATION_CHARACTERISTIC_UUID,
-                      BLECharacteristic::PROPERTY_NOTIFY
+                      BLECharacteristic::PROPERTY_READ   |
+                      BLECharacteristic::PROPERTY_WRITE  |
+                      BLECharacteristic::PROPERTY_NOTIFY |
+                      BLECharacteristic::PROPERTY_INDICATE
                     );
 
   // Register the callback for the ON button characteristic
@@ -256,7 +242,7 @@ void setup() {
   //playsound(NOTE_E4, 250);
   //playsound(NOTE_G4, 250);
   //playsound(NOTE_C5, 250);
-  delay(1000);
+  //delay(1000);
   //off();
 }
 
@@ -274,5 +260,9 @@ void loop(){
         // do stuff here on connecting
         oldDeviceConnected = deviceConnected;
         Serial.println("Device Connected");
+    }
+
+    if(executeExBool == true){
+      executeEx();
     }
 }
