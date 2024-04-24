@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningen beheren</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageEx.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a th:href="@{/}" class="active"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
+        </div>
+        <div>
+            <a th:href="@{/}"><span>Oefeningenreeks starten</span></a>
+            <a th:href="@{/manageEx}" class="active"><span>Oefeningen beheren</span></a>
+            <a th:href="@{/manageExSQ}"><span>Oefeningenreeks beheren</span></a>
+        </div>
+    </nav>
+
+    <div id="ex">
+        <div th:each="exercise : ${exercises}">
+            <img th:src="${exercise.picture}" th:alt="${exercise.name}">
+            <p th:text="${exercise.name}"></p>
+            <p th:text="${exercise.description}"></p>
+            <div class="icons">
+                <a th:href="@{/editEx/{id}(id=${exercise.exID})}"><i class="fa-solid fa-pen"></i></a>
+                <a th:href="@{/deleteEx/{id}(id=${exercise.exID})}"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup">
+        <form method="post" th:action="@{/updateEx/{id}(id=${exercise.exID})}" enctype="multipart/form-data">
+
+            <label for="name">Naam</label>
+            <input type="text" name="name" id="name" th:value="${exercise.name}">
+            <label for="description">Beschrijving</label>
+            <input type="text" name="description" id="description" th:value="${exercise.description}">
+            <div>
+                <label for="handPos">Hand positie</label>
+                <input type="radio" name="typeEX" id="handPos" value="handPos" checked>        
+            </div>
+
+
+
+            <label for="handpalm">Handpalm</label>
+            <select name="handpalm" id="handpalm">
+                <option value="0,0,0">Vrije positie</option>
+                <option value="0,0,-1">Boven</option>
+                <option value="0,1,0">Links</option>
+                <option value="0,0,1">Onder</option>
+                <option value="0,-1,0">Rechts</option>
+                <option value="1,0,0">Vooruit</option>
+                <option value="-1,0,0">Achteruit</option>
+            </select>
+
+            <label for="fingers">Vingers</label>
+            <select name="fingers" id="fingers">
+                <option value="0,0,0">Vrije positie</option>
+                <option value="0,0,-1">Geplooid</option>
+                <option value="0,-1,0">deels Geplooid</option>
+                <option value="0,0,1">Gestrekt</option>
+            </select>
+
+            <label for="thumb">Duim</label>
+            <select name="thumb" id="thumb">
+                <option value="0,0,0">Vrije positie</option>
+                <option value="1,0,0">Tegen de hand</option>
+                <option value="0,-1,0">Gestrekt</option>
+            </select>
+
+            <div>
+                <label for="press">Druk proef</label>
+                <input type="radio" name="typeEX" id="press" value="p">
+            </div>
+
+            <label for="file">Upload foto</label>
+            <input type="file" name="picture" id="picture">
+
+            <div class="next">
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/manageEx}" id="cancel">Annuleren</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const selectPalm = document.getElementById("handpalm");
+        const selectFingers = document.getElementById("fingers");
+        const selectThumb = document.getElementById("thumb");
+
+        selectPalm.addEventListener('change', function(){
+            if((selectPalm.value != "0,0,0") && (selectFingers.value != "0,0,0")){
+                selectThumb.value = "0,0,0";
+                selectThumb.disabled = true;
+            }
+            else{
+                selectThumb.disabled = false;
+            }
+            if((selectPalm.value != "0,0,0") && (selectThumb.value != "0,0,0")){
+                selectFingers.value = "0,0,0";
+                selectFingers.disabled = true;
+            }
+            else{
+                selectFingers.disabled = false;
+            }
+
+            if(selectPalm.value == "0,0,-1" || selectPalm.value == "0,0,1"){
+                selectThumb.value = "0,0,0";
+                selectThumb.disabled = true;
+            }
+            else{
+                selectThumb.disabled = false;
+            }
+            if(selectPalm.value == "0,1,0" || selectPalm.value == "0,-1,0"){
+                selectFingers.value = "0,0,0";
+                selectFingers.disabled = true;
+            }
+            else{
+                selectFingers.disabled = false;
+            }
+        });
+        
+        selectFingers.addEventListener('change', function(){
+            if((selectPalm.value != "0,0,0") && (selectFingers.value != "0,0,0")){
+                selectThumb.value = "0,0,0";
+                selectThumb.disabled = true;
+            }
+            else{
+                selectThumb.disabled = false;
+            }
+        });
+
+        selectThumb.addEventListener('change', function(){
+            if((selectPalm.value != "0,0,0") && (selectThumb.value != "0,0,0")){
+                selectFingers.value = "0,0,0";
+                selectFingers.disabled = true;
+            }
+            else{
+                selectFingers.disabled = false;
+            }
+        });
+
+        const press = document.getElementById("press");
+        press.addEventListener('change', function(){
+            selectPalm.disabled = true;
+            selectFingers.disabled = true;
+            selectThumb.disabled = true;
+            
+        });
+        const handPos = document.getElementById("handPos");
+        handPos.addEventListener('change', function(){
+            selectPalm.disabled = false;
+            selectFingers.disabled = false;
+            selectThumb.disabled = false;    
+        });
+    });
+    </script>
+</body>
+</html>

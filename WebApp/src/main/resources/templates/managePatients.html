@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningenreeks starten</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/manageExSQ.css">
+    <link rel="stylesheet" href="/css/managePatients.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}" class="active">Patiënten</a>
+        </div>
+
+    </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>Patiënt toevoegen</span>
+    </div>
+
+    <div id="patients">
+        <div th:each="patient : ${patients}">
+            <span th:text="${patient.firstName} + ' ' + ${patient.lastName}"></span>
+            <div class="icons">
+                <a th:href="@{/editPatient/{id}(id=${patient.userID})}"><i class="fa-solid fa-pen"></i> Naam</a>
+                <a th:href="@{/editPatientToSQ/{id}(id=${patient.userID})}"><i class="fa-solid fa-pen"></i> Oefeningenreeks</a>
+                <a th:href="@{/deletePatient/{id}(id=${patient.userID})}"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup" style="display: none;">
+        <form method="post" th:action="@{/addPatient}" enctype="multipart/form-data">
+            <label for="firstName">Voornaam</label>
+            <input type="text" name="firstName" id="firstName">
+            <label for="lastName">Achternaam</label>
+            <input type="text" name="lastName" id="lastName">
+            <div class="next">
+                <input type="submit" value="Bevestigen" id="approve">
+                <div onclick="hidePopUp()" id="cancel">
+                    Annuleren
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "inline-block";
+        }
+        function hidePopUp(){
+            const div = document.getElementById("popup");
+            div.style.display = "none";
+        }
+    </script>
+</body>
+</html>

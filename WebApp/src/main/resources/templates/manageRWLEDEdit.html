@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Ring</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageRWLED.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}" class="active"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
+        </div>
+        <div>
+            <a th:href="@{/manageLED}" class="active"><span>LED Ring</span></a>
+            <a th:href="@{/manageMusic}"><span>Muziekjes</span></a>
+        </div>
+    </nav>
+    <div id="popup">
+        <form method="post" th:action="@{/updateLED/{id}(id=${LEDRing.rwLEDRingID})}" enctype="multipart/form-data">
+            <div id="customsvg">
+
+            </div>
+            <div class="next">
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/manageLED}" id="cancel">Annuleren</a>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        function displayPopUp(){
+            const div = document.getElementById("popup");
+            const customsvg = document.getElementById("customsvg");
+            const backcirclediv = document.createElement("div");
+            const backsvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            backsvg.setAttribute("width", "210");
+            backsvg.setAttribute("height", "210");
+            const backcircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            backcircle.setAttribute("cx", "105");
+            backcircle.setAttribute("cy", "105");
+            backcircle.setAttribute("r", "85");
+            backcircle.setAttribute("fill", "none");
+            backcircle.setAttribute("stroke", "black");
+            backcircle.setAttribute("stroke-width", "30");
+            backsvg.appendChild(backcircle);
+            
+            backcirclediv.appendChild(backsvg);
+            customsvg.appendChild(backcirclediv);
+
+            /*<![CDATA[*/
+            var hexCodes = /*[[${hexCodes}]]*/ [];
+            /*]]>*/
+            
+            for(let i=0; i<12; i++){
+                const circleContainer = document.createElement("div");
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", "210");
+                svg.setAttribute("height", "210");
+                const colorInput = document.createElement("input");
+
+                svg.setAttribute("width", "210");
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                const cx = Math.floor(105+ Math.cos((15 + (i*30)) * Math.PI / 180)*85);
+                const cy = Math.floor(105+ Math.sin((15 + (i*30)) * Math.PI / 180)*85);
+
+                console.log(i + " " + hexCodes[i]);
+
+                const cxString = cx.toString();
+                const cyString = cy.toString();
+                circle.setAttribute("cx", cxString);
+                circle.setAttribute("cy", cyString);
+                circle.setAttribute("r", "12");
+                circle.setAttribute("fill", hexCodes[i]);
+                circle.setAttribute("stroke", "white");
+                circle.setAttribute("stroke-width", "2");
+                circle.setAttribute("data-circleid", i.toString());
+                svg.appendChild(circle);
+                circleContainer.appendChild(svg);
+
+                const inputx = Math.floor(cx-13).toString();
+                const inputy = Math.floor(cy-13).toString();
+
+                const stylestring = "left: " + inputx + "px; top: "+ inputy +"px;";
+                const nameAttribute = "color" + i;
+                colorInput.setAttribute("type", "color");
+                colorInput.setAttribute("name", nameAttribute);
+                colorInput.setAttribute("id", "l1");
+                colorInput.setAttribute("class", "colorpicker");
+                colorInput.setAttribute("style", stylestring);
+                colorInput.setAttribute("data-inputid", i.toString());
+                colorInput.setAttribute("value", hexCodes[i]);
+                colorInput.addEventListener("input", function(event){
+                    const query = '[data-circleid="' + colorInput.getAttribute("data-inputid") + '"]';
+                    const circle = document.querySelector(query);
+                    const color = event.target.value;
+                    circle.setAttribute("fill", color);
+                });
+
+                circleContainer.appendChild(colorInput);
+
+                customsvg.appendChild(circleContainer)
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            // Your function code here
+            displayPopUp();
+        });
+
+    </script>
+</body>
+</html>

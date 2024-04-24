@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningenreeks starten</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a th:href="@{/}" class="active"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
+        </div>
+        <div>
+            <a th:href="@{/}" class="active"><span>Oefeningenreeks starten</span></a>
+            <a th:href="@{/manageEx}"><span>Oefeningen beheren</span></a>
+            <a th:href="@{/manageExSQ}"><span>Oefeningenreeks beheren</span></a>
+        </div>
+    </nav>
+    <form method="post" th:action="@{/filterPatient}" enctype="multipart/form-data">
+        <select name="patient" id="patient">
+            <option value="All">Alle oefeningenreeksen</option>
+            <option th:each="patient : ${patients}" th:text="${patient.firstName} + ' ' + ${patient.lastName}" th:value="${patient.userID}"></option>
+        </select>
+        <input type="submit" value="Toepassen">
+    </form>
+
+    <div id="exSQ">
+        <div th:each="sequence : ${sequences}">
+            <a th:href="@{/exec/{id}(id=${sequence.exSQID})}"><i class="fa-solid fa-play"></i></a>
+                <div class="images">
+                    <div th:each="list : ${sequenceLists}" th:if="${list.exSQID == sequence.exSQID}">
+                        <div th:with="ex=${@exerciseService.getExerciseById(list.exID)}">
+                            <img th:src="${ex.picture}" th:alt="${ex.name}">
+                        </div>
+                    </div>
+                </div>
+                <p th:text="${sequence.name}"></p>
+                <p th:text="${sequence.description}"></p>
+        </div>
+    </div>
+    
+</body>
+</html>

@@ -1,0 +1,160 @@
+
+#addEX{
+    background-color: lightgray;
+    font-size: 25px;
+    width: 33%;
+    min-height: 50px;
+    border-radius: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+#addEX span{
+    text-align: center;
+}
+#addEX:hover,
+#addEX:focus{
+    background-color: gray;
+}
+#exSQ{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+}
+
+#exSQ > div{
+    width: 75%;
+    padding-bottom: 10px;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#exSQ > div > .images,
+#selectedSequenceses > div > .images{
+    width: 75%;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid #000;
+    flex-wrap: wrap;
+}
+#exSQ > div > .icons > a,
+#selectedSequenceses > div > .icons > a {
+    color: #000;
+    font-size: 20px;
+    text-decoration: none;
+}
+#exSQ > div > .icons > a > i,
+#selectedSequenceses > div > .icons > a > i{
+    font-size: 40px;
+    color: #000;
+}
+
+#exSQ > div > .images > div > div > img,
+#selectedSequenceses > div > .images > div > div > img{
+    height: 200px;
+}
+#exSQ > div > .images > div > div,
+#selectedSequenceses > div > .images > div > div{
+    margin: 10px;
+}
+
+#popup{
+    position: absolute;
+    top: 150px;
+    left: 16%;
+    width: 70%;
+    min-height: 500px;
+    background-color: lightgray;
+    border-radius: 30px;
+}
+
+#popup form{
+    background-color: transparent;
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#popup form *{
+    margin: 5px;
+    font-size: 15px;
+}
+
+.next{
+    display: flex;
+    justify-content: space-between;
+    width: 40%;
+}
+
+.next *{
+    border-radius: 20px;
+    padding: 10px;
+    border: none;
+}
+#cancel{
+    background-color: red;
+    text-decoration: none;
+    color: #000;
+    font-size: 15px;
+}
+#approve{
+    background-color: green;
+    font-size: 15px;
+}
+#newSQ{
+    border: 2px solid #000;
+    width: 90%;
+    min-height: 220px;
+    border-radius: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#exlist,
+#newSQ{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#exlist > div > img{
+    height: 200px;
+}
+#exlist > div{
+    margin: 10px;
+}
+#newSQ img{
+    height: 200px;
+}
+
+@media (max-width: 900px){
+    #addEX{
+        width: 60%;
+    }
+}
+
+@media (max-width: 600px){
+    #popup{
+        position: absolute;
+        top: 150px;
+        left: 5%;
+        width: 90%;
+    }
+    #addEX{
+        width: 90%;
+    }
+}

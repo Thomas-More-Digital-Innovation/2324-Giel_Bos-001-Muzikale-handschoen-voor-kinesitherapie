@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningenreeks starten</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageExSQ.css">
+    <link rel="stylesheet" href="/css/managePatients.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a th:href="@{/}"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}" class="active">Patiënten</a>
+        </div>
+
+    </nav>
+
+    <div id="popup">
+
+        <div id="exSQ">
+        
+            <div th:each="sequence : ${sequences}">
+                <div class="images">
+                    <div th:each="list : ${sequenceLists}" th:if="${list.exSQID == sequence.exSQID}">
+                        <div th:with="ex=${@exerciseService.getExerciseById(list.exID)}">
+                            <img th:src="${ex.picture}" th:alt="${ex.name}">
+                        </div>
+                    </div>
+                </div>
+                <p th:text="${sequence.name}"></p>
+                <p th:text="${sequence.description}"></p>
+            </div>
+        </div>
+
+        <form method="post" th:action="@{/addPatientToSQ/{id}(id=${patient.userID})}" enctype="multipart/form-data">
+            <select name="exSQID" id="exSQID">
+                <option th:each="sequence : ${sequences}" th:value="${sequence.exSQID}" th:text="${sequence.name}"></option>
+            </select>
+            <div class="next">
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/managePatients}" id="cancel">Annuleren</a>
+            </div>
+        </form>
+        <div id="selectedSequenceses">
+            <div th:each="userSequence : ${userSequences}">
+                <div class="images">
+                    <div th:each="list : ${sequenceLists}" th:if="${list.exSQID == userSequence.exSQID}">
+                        <div th:with="ex=${@exerciseService.getExerciseById(list.exID)}">
+                            <img th:src="${ex.picture}" th:alt="${ex.name}">
+                        </div>
+                    </div>
+                </div>
+                <div class="icons">
+                    <a th:href="@{/deleteUserSequence/{userID}/{exSQID}(userID=${patient.userID}, exSQID=${userSequence.exSQID})}"><i class="fa-solid fa-trash"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

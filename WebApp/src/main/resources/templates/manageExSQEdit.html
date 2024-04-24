@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oefeningenreeks beheren</title>
+    <link rel="stylesheet" href="/css/basicStyling.css">
+    <link rel="stylesheet" href="/css/manageExSQ.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Grace glove</h1>
+    </header>
+    <nav>
+        <div>
+            <a th:href="@{/}" class="active"><span>Oefeningen</span></a>
+            <a th:href="@{/manageLED}"><span>Beloningen</span></a>
+            <a th:href="@{/managePatients}">Patiënten</a>
+        </div>
+        <div>
+            <a th:href="@{/}"><span>Oefeningenreeks starten</span></a>
+            <a th:href="@{/manageEx}"><span>Oefeningen beheren</span></a>
+            <a th:href="@{/manageExSQ}" class="active"><span>Oefeningenreeks beheren</span></a>
+        </div>
+    </nav>
+
+    <div id="addEX" onclick="displayPopUp()">
+        <span>Oefeningenreeks toevoegen</span>
+    </div>
+
+    <div id="popup">
+
+        <form method="post" th:action="@{/updateExSQ/{id}(id=${sequence.exSQID})}" enctype="multipart/form-data">
+            <label for="name">Naam</label>
+            <input type="text" name="name" id="name" th:value="${sequence.name}">
+            <label for="description">Beschrijving</label>
+            <input type="text" name="description" id="description" th:value="${sequence.description}"> 
+            
+            <div class="next">
+                <input type="submit" value="Bevestigen" id="approve">
+                <a th:href="@{/manageExSQ}" id="cancel">Annuleren</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

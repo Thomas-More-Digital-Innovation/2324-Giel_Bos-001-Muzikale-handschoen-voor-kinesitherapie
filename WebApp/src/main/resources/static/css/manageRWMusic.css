@@ -1,0 +1,142 @@
+#addEX{
+    background-color: lightgray;
+    font-size: 25px;
+    width: 33%;
+    min-height: 50px;
+    border-radius: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    text-decoration: none;
+    color: #000;
+}
+#addEX:hover,
+#addEX:focus{
+    background-color: gray;
+}
+
+#popup{
+    position: absolute;
+    top: 150px;
+    left: 33%;
+    width: 34%;
+    min-height: 400px;
+    background-color: lightgray;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.customForm{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+.customForm *{
+    margin-bottom: 20px;
+}
+.next{
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+}
+#musicNotes{
+    margin-top: 20px;
+}
+
+.next *{
+    border-radius: 20px;
+    padding: 10px;
+    border: none;
+}
+#cancel{
+    background-color: red;
+    margin: 10px;
+    text-decoration: none;
+    color: #000;
+    font-size: 15px;
+}
+#approve{
+    background-color: green;
+    margin: 10px;
+    font-size: 15px;
+}
+li {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 40px;
+}
+#newMusic{
+    border: 2px solid #000;
+    min-height: 100px;
+    width: 90%;
+    border-radius: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.icons{
+    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.icons a{
+    margin: 10px;
+    color: #000;
+}
+li > a{
+    color: #000;
+}
+
+#musics{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#musics > div{
+    margin: 20px;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 10px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 900px){
+    #popup{
+        position: absolute;
+        top: 150px;
+        left: 20%;
+        width: 60%;
+    }
+    #addEX{
+        width: 60%;
+    }
+}
+@media (max-width: 600px){
+    #popup{
+        position: absolute;
+        top: 150px;
+        left: 5%;
+        width: 90%;
+    }
+    #addEX{
+        width: 90%;
+    }
+}
