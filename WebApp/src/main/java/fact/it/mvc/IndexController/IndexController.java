@@ -1,6 +1,9 @@
 package fact.it.mvc.IndexController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +26,10 @@ import fact.it.mvc.manageExSQ.ExerciseSequence;
 import fact.it.mvc.manageExSQ.ExerciseSequenceService;
 import fact.it.mvc.RewardLEDRing.RewardLEDRingService;
 import fact.it.mvc.RewardLEDRing.RewardLEDRing;
+import fact.it.mvc.RewardMusicList.RewardMusicListService;
+import fact.it.mvc.RewardMusicList.RewardMusicList;
+import fact.it.mvc.Note.NoteService;
+import fact.it.mvc.Note.Note;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -35,14 +42,25 @@ public class IndexController {
     private final UserService userService;
     private final UserExcerciseSequenceService userExcerciseSequenceService;
     private final RewardLEDRingService rewardLEDRingService;
+    private final RewardMusicListService rewardMusicListService;
+    private final NoteService noteService;
 
-    public IndexController(ExerciseSequenceService exerciseSequenceService, ExerciseService exerciseService, ExerciseSequenceListService exerciseSequenceListService, UserService userService, UserExcerciseSequenceService userExcerciseSequenceService, RewardLEDRingService rewardLEDRingService) {
+    public IndexController(ExerciseSequenceService exerciseSequenceService, 
+    ExerciseService exerciseService, 
+    ExerciseSequenceListService exerciseSequenceListService,
+    UserService userService,
+    UserExcerciseSequenceService userExcerciseSequenceService,
+    RewardLEDRingService rewardLEDRingService,
+    RewardMusicListService rewardMusicListService,
+    NoteService noteService) {
         this.exerciseSequenceService = exerciseSequenceService;
         this.exerciseService = exerciseService;
         this.exerciseSequenceListService = exerciseSequenceListService;
         this.userService = userService;
         this.userExcerciseSequenceService = userExcerciseSequenceService;
         this.rewardLEDRingService = rewardLEDRingService;
+        this.rewardMusicListService = rewardMusicListService;
+        this.noteService = noteService;
     }
 
     @GetMapping("/")
@@ -102,10 +120,67 @@ public class IndexController {
         }
 
         List<RewardLEDRing> rewardLEDRings = rewardLEDRingService.getAllRewardLEDRings();
+
+        List<String> combinedHexCodesList = new ArrayList<>();
+
+        for (int i = 0; i < rewardLEDRings.size(); i++) {
+            RewardLEDRing rewardLEDRing = rewardLEDRings.get(i);
+
+            StringBuilder combinedHexCodes = new StringBuilder();
+            combinedHexCodes.append(rewardLEDRing.getHexCode0()).append(";")
+                            .append(rewardLEDRing.getHexCode1()).append(";")
+                            .append(rewardLEDRing.getHexCode2()).append(";")
+                            .append(rewardLEDRing.getHexCode3()).append(";")
+                            .append(rewardLEDRing.getHexCode4()).append(";")
+                            .append(rewardLEDRing.getHexCode5()).append(";")
+                            .append(rewardLEDRing.getHexCode6()).append(";")
+                            .append(rewardLEDRing.getHexCode7()).append(";")
+                            .append(rewardLEDRing.getHexCode8()).append(";")
+                            .append(rewardLEDRing.getHexCode9()).append(";")
+                            .append(rewardLEDRing.getHexCode10()).append(";")
+                            .append(rewardLEDRing.getHexCode11());
+
+            combinedHexCodesList.add(combinedHexCodes.toString());
+        }
+
+        List<RewardMusicList> rewardMusicLists = rewardMusicListService.getAllRewardMusicLists();
+
+        Map<Integer, List<RewardMusicList>> musicListsByMusicId = rewardMusicLists.stream()
+                .collect(Collectors.groupingBy(RewardMusicList::getRwMID));
+
+        List<String> combinedNotesList = new ArrayList<>();
+
+        for (Map.Entry<Integer, List<RewardMusicList>> entry : musicListsByMusicId.entrySet()) {
+
+            List<RewardMusicList> musicLists = entry.getValue();
+
+
+            List<RewardMusicList> sortedMusicLists = musicLists.stream()
+                    .sorted(Comparator.comparingInt(RewardMusicList::getPlace))
+                    .collect(Collectors.toList());
+
+            StringBuilder combinedNotes = new StringBuilder();
+
+            for (RewardMusicList musicList : sortedMusicLists) {
+                Note note = noteService.getNoteById(musicList.getNoteID());
+                int hzValue = note.getHzValue();
+
+                combinedNotes.append(hzValue).append(";");
+            }
+
+            if (combinedNotes.length() > 0) {
+                combinedNotes.deleteCharAt(combinedNotes.length() - 1);
+            }
+
+            combinedNotesList.add(combinedNotes.toString());
+        }
+
         model.addAttribute("exStrings", exString);
         model.addAttribute("names", name);
         model.addAttribute("descriptions", description);
         model.addAttribute("pictures", picture);
+        model.addAttribute("hexCodeList", combinedHexCodesList);
+        model.addAttribute("musicList", combinedNotesList);
         return "execute";
     }
 }

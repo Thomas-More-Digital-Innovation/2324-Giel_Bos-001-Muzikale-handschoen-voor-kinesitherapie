@@ -104,6 +104,55 @@ void notifyExerciseDone() {
   }
 }
 
+void notifyRewardDone() {
+  if (deviceConnected) {
+    String message = "RewardDone";
+    pNotificationCharacteristic->setValue(message.c_str());
+    pNotificationCharacteristic->notify(); // Notify connected devices
+    Serial.println("Notification Send");
+    delay(1000);
+  }
+}
+
+std::array<uint32_t, 3> hexToRGB(String hex) {
+    // Convert the hexadecimal string to integer values
+    uint32_t color = strtol(hex.substring(1).c_str(), NULL, 16); // Skip the '#' character
+
+    std::array<uint32_t, 3> rgb;
+    // Extract red, green, and blue components
+    rgb[0] = (color >> 16) & 0xFF; // Red
+    rgb[1] = (color >> 8) & 0xFF;  // Green
+    rgb[2] = color & 0xFF;         // Blue
+
+    return rgb;
+}
+
+
+void ledReward(String ledString){
+  if(ledString != ""){
+    std::vector<String> hexCodeArray = splitString(ledString, ';');
+    std::array<std::array<uint32_t, 3>,12> hexInt;
+    for(int i = 0; i< hexCodeArray.size(); i++){
+      hexInt[i] = hexToRGB(hexCodeArray[i]);
+    }
+    showFigure(hexInt, 255);
+  }
+}
+
+void musicReward(String musicString){
+  if(musicString == ""){
+    delay(1000);
+  }
+  else{
+    std::vector<String> musicRewardString = splitString(musicString, ';');
+    for(int i = 0; i < musicRewardString.size(); i++){
+      int hzValue = musicRewardString[i].toInt();
+      playsound(hzValue, 250);
+    }
+  }
+  off();
+}
+
 void executeEx(){
   bool oefeningKlaar = false;
   if(incomingValue != "p"){
@@ -147,25 +196,43 @@ class MyCharacteristicCallbacks : public BLECharacteristicCallbacks {
     incomingValue = onCharacteristic->getValue();
     Serial.println(incomingValue.c_str());
     if (incomingValue.length() > 0) {
-      if(incomingValue != "p"){
+      if(incomingValue[0] == 'R'){
+        std::string myString = incomingValue.substr(2);
 
-        oefeningen =  toIntVector(incomingValue.c_str());
-        for(int i= 0; i< boolArray.size(); i++){
-          boolArray[i] = false;
-        }
-        for(int i = 0; i < oefeningen.size(); i++){
-          for(int j = 0; j < oefeningen[i].size(); j++){
-            if(oefeningen[i][j] != 0){
-              boolArray[i] = true;
-            }
-          }
-        }
+        int indexOfH = myString.find('H');
 
-        for(int i= 0; i< boolArray.size(); i++){
-          Serial.println(boolArray[i]);
+        if (indexOfH != -1) {
+          std::string beforeH = myString.substr(0, indexOfH);
+          std::string afterH = myString.substr(indexOfH+1);
+          Serial.println(beforeH.c_str());
+          Serial.println(afterH.c_str());
+          ledReward(afterH.c_str());
+          musicReward(beforeH.c_str());
+          notifyRewardDone();
         }
       }
-      executeExBool = true;
+      else{
+        if(incomingValue != "p"){
+
+          oefeningen =  toIntVector(incomingValue.c_str());
+          for(int i= 0; i< boolArray.size(); i++){
+            boolArray[i] = false;
+          }
+          for(int i = 0; i < oefeningen.size(); i++){
+            for(int j = 0; j < oefeningen[i].size(); j++){
+              if(oefeningen[i][j] != 0){
+                boolArray[i] = true;
+              }
+            }
+          }
+
+          for(int i= 0; i< boolArray.size(); i++){
+            Serial.println(boolArray[i]);
+          }
+        }
+        executeExBool = true;
+      }
+
     }
   }
 };
