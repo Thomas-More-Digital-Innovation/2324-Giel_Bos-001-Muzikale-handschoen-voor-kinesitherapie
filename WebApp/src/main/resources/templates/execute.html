@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>ESP32 Web BLE App</title>
+    <title>Oefeiningen uitvoeren</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/basicStyling.css">
     <link rel="stylesheet" href="/css/execute.css">
 </head>
 <body>
-  <h1>ESP32 Web BLE Application</h1>
-  <button id="connectBleButton">Connect to BLE Device</button>
-  <button id="disconnectBleButton">Disconnect BLE Device</button>
-  <p>BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
+  <h1>Oefeiningen uitvoeren</h1>
+  <button id="connectBleButton">Verbind met de handschoen</button>
+  <button id="disconnectBleButton">Verbreek verbinding met de handschoen</button>
+  <p> <strong><span id="bleState" style="color:#d13a30;">Verbroken</span></strong></p>
   <button id="start">Start</button>
   <img id="pic" src="" alt="">
-  <button id="next">Next</button>
+  <p id="name"></p>
+  <p id="descrip"></p>
+  <button id="next">Volgende</button>
+  <a th:href="@{/}">Terug naar oefeningenreeksen</a>
 
 </body>
 <script th:inline="javascript">
@@ -48,6 +51,8 @@
     var names = /*[[${names}]]*/ [];
     var descriptions = /*[[${descriptions}]]*/ [];
     var pictures = /*[[${pictures}]]*/ [];
+    var hexCodeList = /*[[${hexCodeList}]]*/ [];
+    var musicList = /*[[${musicList}]]*/ [];
     var currentIndex = 0; // Track the current index of the exercise
     function sendData() {
         // Add event listener for the next button
@@ -64,7 +69,10 @@
             const pic = document.getElementById("pic");
             pic.setAttribute("src", pictures[currentIndex]);
             pic.setAttribute("alt", names[currentIndex]);
-
+            const name = document.getElementById("name");
+            name.innerHTML = names[currentIndex];
+            const description = document.getElementById("descrip");
+            description.innerHTML = descriptions[currentIndex];
             console.log("exercise" + " " + currentIndex);
             console.log(exStrings[currentIndex]);
             console.log(names[currentIndex]);
@@ -87,13 +95,29 @@
         }
     }
 
+    function getRandomItem(list) {
+        // Add 1 to the length to include the possibility of 'null' as an option
+        var randomIndex = Math.floor(Math.random() * (list.length));
+        // If the random index equals the list length, return null (or any other value representing "nothing")
+        if (randomIndex === list.length) {
+            return null; // You can change this to any value you prefer for "nothing"
+        }
+        return list[randomIndex];
+    }
+
     function handleCharacteristicChange(event) {
         const newValueReceived = new TextDecoder().decode(event.target.value);
         console.log("Received message: ", newValueReceived);
         
         if (newValueReceived === "ExerciseDone") {
+            var randomHexCode = getRandomItem(hexCodeList);
+            var randomMusicList = getRandomItem(musicList);
+            var resultString = "RM" + (randomMusicList || "") + "H" + (randomHexCode || "");
+            writeOnCharacteristic(resultString);
+        }
+        if (newValueReceived === "RewardDone"){
             console.log("Exercise marked as done");
-            processNextExercise(); // Process the next exercise
+            processNextExercise(); // Process the next exercise            
         }
     }
 
@@ -147,7 +171,6 @@
             console.log("Read value: ", value);
             const decodedValue = new TextDecoder().decode(value);
             console.log("Decoded value: ", decodedValue);
-            retrievedValue.innerHTML = decodedValue;
         })
         .catch(error => {
             console.log('Error: ', error);
