@@ -1,3 +1,18 @@
+*{
+    text-align: center;
+}
 img{
     height: 400px;
+}
+
+button, a{
+    padding: 7px;
+    border-radius: 10px;
+    color: black;
+    background-color: lightgray;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #000;
+    margin: 10px;
+    font-size: 17px;
 }

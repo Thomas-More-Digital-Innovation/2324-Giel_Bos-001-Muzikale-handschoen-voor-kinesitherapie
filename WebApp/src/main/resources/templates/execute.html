@@ -7,28 +7,36 @@
     <link rel="stylesheet" href="/css/execute.css">
 </head>
 <body>
-  <h1>Oefeiningen uitvoeren</h1>
+    <header>
+        <h1>Grace glove</h1>
+        <h1>Oefening uitvoeren</h1>
+    </header>
   <button id="connectBleButton">Verbind met de handschoen</button>
-  <button id="disconnectBleButton">Verbreek verbinding met de handschoen</button>
-  <p> <strong><span id="bleState" style="color:#d13a30;">Verbroken</span></strong></p>
-  <button id="start">Start</button>
+  
+  <p> <strong><span>Verbindings status: </span><span id="bleState" style="color:#d13a30;">Verbroken</span></strong></p>
+  <button id="start" style="display: none;">Start</button>
+  <p><strong><span th:text="${sequence.name}"></span> <span id="expercentage"></span></strong></p>
+  <p th:text="${sequence.description}"></p>
   <img id="pic" src="" alt="">
-  <p id="name"></p>
-  <p id="descrip"></p>
-  <button id="next">Volgende</button>
+  <h2 id="ready" style="display: none;"></h2>
+  <p>Naam van de oefening: <span id="name"></span></p>
+  <p>Beschrijving van de oefening: <span id="descrip"></span></p>
+  <br>
+  <button id="next" style="display: none;">Sla oefening over</button>
   <a th:href="@{/}">Terug naar oefeningenreeksen</a>
 
 </body>
 <script th:inline="javascript">
     // DOM Elements
     const connectButton = document.getElementById('connectBleButton');
-    const disconnectButton = document.getElementById('disconnectBleButton');
     const onButton = document.getElementById('onButton');
     const offButton = document.getElementById('offButton');
     const latestValueSent = document.getElementById('valueSent');
     const bleStateContainer = document.getElementById('bleState');
     const timestampContainer = document.getElementById('timestamp');
     const nextButton = document.getElementById('next');
+    const ready = document.getElementById('ready');
+    const expercentage = document.getElementById('expercentage');
 
     //Define BLE Device Specs
     var deviceName ='ESP32';
@@ -59,6 +67,10 @@
         nextButton.addEventListener("click", function () {
             processNextExercise();
         });
+        startButton.style.display = 'none';
+
+        ready.style.display = 'block';
+        ready.innerHTML = "Oefening bezig";
 
         // Start with the first exercise
         processNextExercise();
@@ -78,7 +90,7 @@
             console.log(names[currentIndex]);
             console.log(descriptions[currentIndex]);
             console.log(pictures[currentIndex]);
-
+            
             writeOnCharacteristic(exStrings[currentIndex]);
             currentIndex++;
             console.log("currentIndex " + currentIndex);
@@ -90,7 +102,7 @@
                 console.log("done");
             } else {
                 console.log("All exercises done");
-                nextButton.disabled = true;
+                nextButton.style.display = 'none';
             }
         }
     }
@@ -114,15 +126,18 @@
             var randomMusicList = getRandomItem(musicList);
             var resultString = "RM" + (randomMusicList || "") + "H" + (randomHexCode || "");
             writeOnCharacteristic(resultString);
+            ready.innerHTML = "oefening voltooid";
+            if(currentIndex == exStrings.length){
+                ready.innerHTML = "Reeks voltooid";
+            }
         }
         if (newValueReceived === "RewardDone"){
             console.log("Exercise marked as done");
+            ready.innerHTML = "Oefening bezig";
             processNextExercise(); // Process the next exercise            
         }
     }
 
-    // Disconnect Button
-    disconnectButton.addEventListener('click', disconnectDevice);
 
     // Check if BLE is available in your Browser
     function isWebBluetoothEnabled() {
@@ -144,7 +159,7 @@
         })
         .then(device => {
             console.log('Device Selected:', device.name);
-            bleStateContainer.innerHTML = 'Connected to device ' + device.name;
+            bleStateContainer.innerHTML = "Verbonden";
             bleStateContainer.style.color = "#24af37";
             device.addEventListener('gattservicedisconnected', onDisconnected);
             return device.gatt.connect();
@@ -174,7 +189,10 @@
         })
         .catch(error => {
             console.log('Error: ', error);
-        })
+        });
+
+        startButton.style.display = 'inline-block';
+        nextButton.style.display = 'inline-block';
     }
 
     function onDisconnected(event){
@@ -203,6 +221,8 @@
             console.error ("Bluetooth is not connected. Cannot write to characteristic.")
             window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
         }
+        let indexplusone = currentIndex + 1; 
+        expercentage.innerHTML =  'oefening ' + indexplusone + '/' + exStrings.length;
     }
 
     function disconnectDevice() {

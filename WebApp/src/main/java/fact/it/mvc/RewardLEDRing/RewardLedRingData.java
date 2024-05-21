@@ -8,10 +8,9 @@ import java.util.Random;
 
 @Component
 public class RewardLedRingData implements CommandLineRunner {
-
+    @Autowired
     private final RewardLEDRingRepository rewardLEDRingRepository;
 
-    @Autowired
     public RewardLedRingData(RewardLEDRingRepository rewardLEDRingRepository) {
         this.rewardLEDRingRepository = rewardLEDRingRepository;
     }

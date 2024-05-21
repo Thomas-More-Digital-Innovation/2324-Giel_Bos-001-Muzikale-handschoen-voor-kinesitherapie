@@ -181,6 +181,7 @@ public class IndexController {
         model.addAttribute("pictures", picture);
         model.addAttribute("hexCodeList", combinedHexCodesList);
         model.addAttribute("musicList", combinedNotesList);
+        model.addAttribute("sequence", sequence);
         return "execute";
     }
 }
