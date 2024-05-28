@@ -36,6 +36,7 @@ nav div a:hover,
 nav div a:focus,
 nav div a.active{
     background-color: gray;
+    cursor: pointer;
 }
 
 @media (max-width: 600px){

@@ -19,6 +19,7 @@
 #addEX:hover,
 #addEX:focus{
     background-color: gray;
+    cursor: pointer;
 }
 #exSQ{
     display: flex;
@@ -108,6 +109,12 @@
     text-decoration: none;
     color: #000;
     font-size: 15px;
+}
+#approve:hover{
+    cursor: pointer;
+}
+#cancel:hover{
+    cursor: pointer;
 }
 #approve{
     background-color: green;

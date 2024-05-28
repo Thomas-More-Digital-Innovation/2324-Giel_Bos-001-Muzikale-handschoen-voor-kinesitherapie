@@ -257,7 +257,6 @@ void setup() {
       smiley[i][2] = 0;
     }
   }
-
   hand.gyroSetup(0x69, Wire);
   thumb.gyroSetup(0x68, Wire);
   fingers.gyroSetup(0x68, Wire1);

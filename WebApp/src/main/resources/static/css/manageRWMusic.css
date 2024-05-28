@@ -18,6 +18,7 @@
 #addEX:hover,
 #addEX:focus{
     background-color: gray;
+    cursor: pointer;
 }
 
 #popup{
@@ -68,6 +69,12 @@
     background-color: green;
     margin: 10px;
     font-size: 15px;
+}
+#approve:hover{
+    cursor: pointer;
+}
+#cancel:hover{
+    cursor: pointer;
 }
 li {
     display: inline-block;

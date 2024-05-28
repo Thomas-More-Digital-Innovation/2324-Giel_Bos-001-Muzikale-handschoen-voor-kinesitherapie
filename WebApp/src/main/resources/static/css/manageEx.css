@@ -44,6 +44,7 @@
 #addEX:hover,
 #addEX:focus{
     background-color: gray;
+    cursor: pointer;
 }
 
 #popup{
@@ -92,7 +93,12 @@
     background-color: green;
     font-size: 15px;
 }
-
+#approve:hover{
+    cursor: pointer;
+}
+#cancel:hover{
+    cursor: pointer;
+}
 @media (max-width: 900px){
     #popup{
         position: absolute;
