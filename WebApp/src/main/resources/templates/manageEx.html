@@ -34,7 +34,6 @@
         <div th:each="exercise : ${exercises}">
             <img th:src="${exercise.picture}" th:alt="${exercise.name}">
             <p th:text="${exercise.name}"></p>
-            <p th:text="${exercise.description}"></p>
             <div class="icons">
                 <a th:href="@{/editEx/{id}(id=${exercise.exID})}"><i class="fa-solid fa-pen"></i></a>
                 <a th:href="@{/deleteEx/{id}(id=${exercise.exID})}"><i class="fa-solid fa-trash"></i></a>
@@ -86,7 +85,7 @@
             </div>
 
             <label for="file">Upload foto</label>
-            <input type="file" name="picture" id="picture">
+            <input type="file" name="picture" id="picture" accept="image/*">
 
             <div class="next">
                 <input type="submit" value="Bevestigen" id="approve">

@@ -257,11 +257,8 @@ void setup() {
       smiley[i][2] = 0;
     }
   }
-  Serial.println("hand");
   hand.gyroSetup(0x69, Wire);
-  Serial.println("thumb");
   thumb.gyroSetup(0x68, Wire);
-  Serial.println("fingers");
   fingers.gyroSetup(0x68, Wire1);
 
     // Create the BLE Device

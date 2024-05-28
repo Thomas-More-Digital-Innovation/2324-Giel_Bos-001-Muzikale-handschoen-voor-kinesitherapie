@@ -11,10 +11,22 @@
         <h1>Grace glove</h1>
         <h1>Oefening uitvoeren</h1>
     </header>
-  <button id="connectBleButton">Verbind met de handschoen</button>
+  <button id="connectBleButton">Verbind handschoen</button>
   
-  <p> <strong><span>Verbindings status: </span><span id="bleState" style="color:#d13a30;">Verbroken</span></strong></p>
+  <p> <strong><span>Verbindingsstatus: </span><span id="bleState" style="color:#d13a30;">Verbroken</span></strong></p>
   <button id="start" style="display: none;">Start</button>
+  <div id="manuel">
+    <h2>Hoe verbinden?</h2>
+    <h3>1. Steek de handschoen in</h3>
+    <img src="/img/handschoenIMG1.jpg" alt="foto handschoen">
+    <img src="/img/handschoenIMG2.jpg" alt="foto handschoen ingestoken">
+    <h3>2. Druk op de knop Verbind handschoen</h3>
+    <p>Volgend scherm zal openen selecteer hier "ESP32".</p>
+    <img src="/img/window.png" alt="window png">
+    <p>De handschoen is nu verbonden klik op de knop "Start" om de reeks te starten.</p>
+    <h3>3. Na afloop van de reeks</h3>
+    <p>Trek de handshcoen in na verloop of vroegtijdig stoppen van een reeks.</p>
+  </div>
   <p><strong><span th:text="${sequence.name}"></span> <span id="expercentage"></span></strong></p>
   <p th:text="${sequence.description}"></p>
   <img id="pic" src="" alt="">
@@ -37,6 +49,7 @@
     const nextButton = document.getElementById('next');
     const ready = document.getElementById('ready');
     const expercentage = document.getElementById('expercentage');
+    const manuel = document.getElementById('manuel');
 
     //Define BLE Device Specs
     var deviceName ='ESP32';
@@ -68,6 +81,7 @@
             processNextExercise();
         });
         startButton.style.display = 'none';
+        manuel.style.display = 'none';
 
         ready.style.display = 'block';
         ready.innerHTML = "Oefening bezig";
@@ -128,12 +142,14 @@
             writeOnCharacteristic(resultString);
             ready.innerHTML = "oefening voltooid";
             if(currentIndex == exStrings.length){
-                ready.innerHTML = "Reeks voltooid";
+                ready.innerHTML = "Reeks voltooid trek de handschoen uit";
             }
         }
         if (newValueReceived === "RewardDone"){
             console.log("Exercise marked as done");
-            ready.innerHTML = "Oefening bezig";
+            if(currentIndex < exStrings.length){
+                ready.innerHTML = "Oefening bezig";
+            }
             processNextExercise(); // Process the next exercise            
         }
     }
@@ -221,8 +237,10 @@
             console.error ("Bluetooth is not connected. Cannot write to characteristic.")
             window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
         }
-        let indexplusone = currentIndex + 1; 
-        expercentage.innerHTML =  'oefening ' + indexplusone + '/' + exStrings.length;
+        if(currentIndex < exStrings.length){
+            let indexplusone = currentIndex + 1; 
+            expercentage.innerHTML =  'oefening ' + indexplusone + '/' + exStrings.length;
+        }
     }
 
     function disconnectDevice() {

@@ -18,6 +18,7 @@
 #addEX:hover,
 #addEX:focus{
     background-color: gray;
+    cursor: pointer;
 }
 
 #popup{
@@ -84,6 +85,12 @@ form *{
 #approve{
     background-color: green;
     margin: 10px;
+}
+#approve:hover{
+    cursor: pointer;
+}
+#cancel:hover{
+    cursor: pointer;
 }
 
 #LEDRings{
